@@ -18,10 +18,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4b6cb7">
   <link rel="apple-touch-icon" href="icon.png">
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4b6cb7">
-<link rel="apple-touch-icon" href="icon.png"></head>
+</head>
 <body>
 <div id="root"></div>
 
@@ -32,10 +29,14 @@
   // ---- COMPOSANT PRINCIPAL ----
   function App() {
 
-    // ---- PARAMÈTRES D'URL (peut être utilisé pour forcer un vendeur) ----
+    // ---- PARAMÈTRES D'URL & DÉDUCTION AUTOMATIQUE ----
     const params = new URLSearchParams(window.location.search);
-    // Le vendeur est déterminé par : URL > localStorage > défaut null
-    const vendeur = params.get("vendeur") || localStorage.getItem("vendeur_name") || null;
+
+    // Déduction du vendeur depuis le nom du dépôt (ex: hanout-tartiza -> tartiza)
+    const repoName = window.location.pathname.split('/')[1] || '';
+    const deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
+
+    const vendeur = params.get("vendeur") || localStorage.getItem("vendeur_name") || deducedVendor;
 
     // ---- TOKEN MAÎTRE (stocké dans localStorage) ----
     let MASTER_TOKEN = localStorage.getItem("master_token");
@@ -457,7 +458,7 @@
       );
     };
 
-    // ---- RENDU ----
+    // ---- CHARGEMENT ----
     if (isLoading || !isConfigLoaded) {
       return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -601,8 +602,105 @@
         )}
 
         {/* --- MODALS --- */}
-        {/* (les modals sont identiques à la version précédente, je les garde pour gagner de la place) */}
-        {/* Je les inclurai dans le fichier final, mais je les omets ici pour la lisibilité */}
+        {/* Modal mot de passe */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 z-[150] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowPasswordModal(false)}>
+            <div className="bg-slate-900/95 border border-cyan-500/30 rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+              <h3 className="text-xl font-bold text-cyan-300 mb-4 text-center">🔐 Accès admin</h3>
+              <p className="text-sm text-slate-400 mb-4 text-center">Entrez votre mot de passe pour accéder à l'administration.</p>
+              <input type="password" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Mot de passe" className="w-full bg-slate-800/70 border border-slate-700/80 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 text-base mb-4" onKeyDown={e => e.key === "Enter" && handleAdminLogin()} />
+              <div className="flex gap-3">
+                <button onClick={handleAdminLogin} className="flex-1 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">✅ Valider</button>
+                <button onClick={() => setShowPasswordModal(false)} className="flex-1 bg-slate-700/60 hover:bg-slate-600/60 text-white font-bold py-3 rounded-xl border border-slate-600/50 transition">Annuler</button>
+              </div>
+              {msg.text && msg.type === "error" && <p className="mt-3 text-sm font-mono text-red-400">{msg.text}</p>}
+            </div>
+          </div>
+        )}
+
+        {/* Modal image agrandie */}
+        {expandedImage && (
+          <div className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4 cursor-pointer" onClick={() => setExpandedImage(null)}>
+            <div className="relative max-w-4xl max-h-[90vh]">
+              <img src={expandedImage} alt="Agrandissement" className="max-w-full max-h-[90vh] object-contain rounded-2xl" onError={e => e.target.src = "https://via.placeholder.com/800"} />
+              <button onClick={() => setExpandedImage(null)} className="absolute top-4 right-4 text-white text-3xl bg-black/50 hover:bg-black/70 rounded-full w-12 h-12 flex items-center justify-center">✕</button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Panier */}
+        {showCart && (
+          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={() => setShowCart(false)}>
+            <div className="bg-slate-900/95 border border-cyan-500/30 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-cyan-300">🛒 Panier</h3>
+                <button onClick={() => setShowCart(false)} className="text-slate-400 hover:text-white text-xl">✕</button>
+              </div>
+
+              {cart.length === 0 ? (
+                <p className="text-slate-500 text-center py-8">Panier vide</p>
+              ) : (
+                <>
+                  {cart.map(i => (
+                    <div key={i.id} className="bg-slate-800/70 rounded-xl p-3 flex items-center gap-3 mb-2">
+                      <img src={i.image} alt={i.name} className="w-12 h-12 object-cover rounded-full border border-cyan-500/30 cursor-pointer" onClick={() => setExpandedImage(i.image)} onError={e => e.target.src = "https://via.placeholder.com/50"} />
+                      <div className="flex-1">
+                        <p className="text-white text-sm">{i.name}</p>
+                        <p className="text-xs text-cyan-300">{i.price}{currency}</p>
+                      </div>
+                      <button onClick={() => updateQty(i.id, -1)} className="bg-slate-700/60 hover:bg-slate-600/60 text-white w-8 h-8 rounded-lg">-</button>
+                      <span className="text-white w-6 text-center">{i.quantity}</span>
+                      <button onClick={() => updateQty(i.id, 1)} className="bg-slate-700/60 hover:bg-slate-600/60 text-white w-8 h-8 rounded-lg">+</button>
+                      <button onClick={() => removeFromCart(i.id)} className="bg-slate-700/60 hover:bg-red-600/40 text-white w-8 h-8 rounded-lg">✕</button>
+                    </div>
+                  ))}
+
+                  <div className="border-t border-slate-700/50 pt-4 mt-4">
+                    <div className="flex justify-between text-white font-bold text-lg mb-4">
+                      <span>Total</span>
+                      <span className="text-cyan-300">{getTotal()}{currency}</span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <input type="text" value={order.name} onChange={e => setOrder({ ...order, name: e.target.value })} placeholder="Nom complet *" className="w-full bg-slate-800/70 border border-slate-700/80 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 text-sm" />
+                      <input type="text" value={order.address} onChange={e => setOrder({ ...order, address: e.target.value })} placeholder="Adresse *" className="w-full bg-slate-800/70 border border-slate-700/80 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 text-sm" />
+                      <input type="tel" value={order.phone} onChange={e => setOrder({ ...order, phone: e.target.value })} placeholder="Téléphone *" className="w-full bg-slate-800/70 border border-slate-700/80 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 text-sm" />
+                      <textarea value={order.comments} onChange={e => setOrder({ ...order, comments: e.target.value })} placeholder="Commentaires (facultatif)" rows="2" className="w-full bg-slate-800/70 border border-slate-700/80 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 text-sm resize-none"></textarea>
+                    </div>
+
+                    <button onClick={checkout} className="w-full mt-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">✅ Valider</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Modal générique pour catégorie ou produit */}
+        {modal.open && (
+          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={closeModal}>
+            <div className="bg-slate-900/95 border border-cyan-500/30 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+              <h3 className="text-2xl font-bold text-cyan-300 mb-5 text-center">
+                {modal.creating ? `✦ Nouveau ${modal.type === "category" ? "catégorie" : "produit"} ✦` : `✦ Modifier ${modal.type === "category" ? "la catégorie" : "le produit"} ✦`}
+              </h3>
+
+              {modal.type === "category"
+                ? schema.categories.fields.map(renderField)
+                : schema.products.fields.map(f => {
+                    if (f.key === "categoryId") return renderField({ ...f, options: "categories" });
+                    return renderField(f);
+                  })
+              }
+
+              <div className="flex gap-3 mt-4">
+                <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="flex-1 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">
+                  {modal.creating ? '✅ Créer' : '💾 Sauvegarder'}
+                </button>
+                <button onClick={closeModal} className="flex-1 bg-slate-700/60 hover:bg-slate-600/60 text-white font-bold py-3 rounded-xl border border-slate-600/50 transition">Annuler</button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     );
@@ -613,8 +711,6 @@
   const root = ReactDOM.createRoot(container);
   root.render(<App />);
 </script>
-
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
 </body>
