@@ -36,7 +36,8 @@
     const repoName = window.location.pathname.split('/')[1] || '';
     const deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
 
-    const vendeur = params.get("vendeur") || localStorage.getItem("vendeur_name") || deducedVendor;
+    // Priorité : paramètre URL > déduction automatique > localStorage
+    const vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name");
 
     // ---- TOKEN MAÎTRE (stocké dans localStorage) ----
     let MASTER_TOKEN = localStorage.getItem("master_token");
