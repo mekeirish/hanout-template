@@ -39,17 +39,24 @@
     // Priorité : paramètre URL > déduction automatique > localStorage
     const vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name");
 
-    // ---- TOKEN DÉDIÉ (stocké pour chaque dépôt) ----
-    const tokenKey = `fgt_token_${repoName}`;
-    let MASTER_TOKEN = localStorage.getItem(tokenKey);
+    // ---- TOKEN DÉDIÉ (demandé uniquement quand nécessaire) ----
+    let MASTER_TOKEN = null;
 
-    if (!MASTER_TOKEN) {
-      MASTER_TOKEN = prompt(`🔐 Entrez le token pour ${repoName} :`);
-      if (MASTER_TOKEN) {
-        localStorage.setItem(tokenKey, MASTER_TOKEN);
-      } else {
-        alert("Token requis pour utiliser l'application.");
+    function getToken() {
+      if (MASTER_TOKEN) return MASTER_TOKEN;
+      const tokenKey = `fgt_token_${repoName}`;
+      let token = localStorage.getItem(tokenKey);
+      if (!token) {
+        token = prompt(`🔐 Entrez le token pour ${repoName} :`);
+        if (token) {
+          localStorage.setItem(tokenKey, token);
+        } else {
+          alert("Token requis pour cette action.");
+          return null;
+        }
       }
+      MASTER_TOKEN = token;
+      return token;
     }
 
     // ---- ÉTATS ----
@@ -144,11 +151,17 @@
 
     // ---- CHARGEMENT DES DONNÉES DU VENDEUR ----
     const loadVendeurData = async (owner, repo) => {
+      const token = getToken();
+      if (!token) {
+        setMsg({ text: "❌ Token requis pour charger les données.", type: "error" });
+        setIsLoading(false);
+        return;
+      }
       const FILE_PATH = "don.json";
       try {
         const url = `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`;
         const res = await fetch(url, {
-          headers: { Authorization: `token ${MASTER_TOKEN}` },
+          headers: { Authorization: `token ${token}` },
         });
 
         if (res.status === 404) {
@@ -195,6 +208,10 @@
 
     // ---- SAUVEGARDE DES DONNÉES ----
     const saveFile = async (owner, repo, content) => {
+      const token = getToken();
+      if (!token) {
+        throw new Error("Token requis pour sauvegarder.");
+      }
       const FILE_PATH = "don.json";
       const url = `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`;
       const jsonContent = JSON.stringify(content, null, 2);
@@ -203,7 +220,7 @@
       let sha = null;
       try {
         const getRes = await fetch(url, {
-          headers: { Authorization: `token ${MASTER_TOKEN}` },
+          headers: { Authorization: `token ${token}` },
         });
         if (getRes.ok) {
           const d = await getRes.json();
@@ -221,7 +238,7 @@
       const putRes = await fetch(url, {
         method: "PUT",
         headers: {
-          Authorization: `token ${MASTER_TOKEN}`,
+          Authorization: `token ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
