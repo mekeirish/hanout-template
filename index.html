@@ -27,19 +27,16 @@
     const VENDOR = "{{VENDOR}}";
     const PASSWORD_HASH = "{{PASSWORD_HASH}}";
 
-    // ---- VÉRIFICATION DU TEMPLATE BRUT (CORRIGÉE) ----
-    // Utilisation de startsWith pour éviter le piège du replace global
+    // ---- VÉRIFICATION DU TEMPLATE BRUT ----
     const isPlaceholder = VENDOR.startsWith("{{");
 
     // ---- DÉDUCTION AUTOMATIQUE DU VENDEUR ----
     const params = new URLSearchParams(window.location.search);
     const repoName = window.location.pathname.split('/')[1] || '';
     const deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
-
-    // Priorité : paramètre URL > déduction automatique > localStorage > CONSTANTE VENDOR
     const vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name") || VENDOR;
 
-    // ---- TOKEN DÉDIÉ (demandé uniquement quand nécessaire) ----
+    // ---- TOKEN DÉDIÉ (demandé UNIQUEMENT au commit) ----
     let MASTER_TOKEN = null;
     function getToken() {
       if (MASTER_TOKEN) return MASTER_TOKEN;
@@ -100,29 +97,22 @@
       }
     };
 
-    // ---- CHARGEMENT DES DONNÉES ----
+    // ---- CHARGEMENT DES DONNÉES (SANS TOKEN - LECTURE PUBLIQUE) ----
     useEffect(() => {
       const load = async () => {
         if (!vendeur || isPlaceholder) {
           setIsLoading(false);
           return;
         }
-        const token = getToken();
-        if (!token) {
-          setIsLoading(false);
-          setMsg({ text: "❌ Token requis pour charger les données.", type: "error" });
-          return;
-        }
         try {
           const url = `https://api.github.com/repos/mekeirish/${repoName}/contents/don.json`;
-          const res = await fetch(url, { headers: { Authorization: `token ${token}` } });
+          const res = await fetch(url); // ✅ PAS DE TOKEN ICI (lecture publique)
           if (res.status === 404) {
             const defaultData = {
               settings: { title: `Boutique de ${vendeur}`, currency: "DZD", showStock: true, ntfyTopic: `${vendeur}_commandes` },
               categories: [],
               products: [],
             };
-            await saveFile(defaultData);
             setData(defaultData);
             setEditableData(defaultData);
           } else if (res.ok) {
@@ -134,17 +124,25 @@
             throw new Error(`Erreur ${res.status}`);
           }
         } catch (err) {
-          setMsg({ text: `❌ Erreur : ${err.message}`, type: "error" });
+          setMsg({ text: `❌ Erreur de chargement : ${err.message}`, type: "error" });
+          // Données par défaut en cas d'erreur
+          const defaultData = {
+            settings: { title: `Boutique de ${vendeur}`, currency: "DZD", showStock: true, ntfyTopic: `${vendeur}_commandes` },
+            categories: [],
+            products: [],
+          };
+          setData(defaultData);
+          setEditableData(defaultData);
         }
         setIsLoading(false);
       };
       load();
     }, []);
 
-    // ---- SAUVEGARDE ----
+    // ---- SAUVEGARDE (AVEC TOKEN - DEMANDÉ UNIQUEMENT ICI) ----
     const saveFile = async (content) => {
-      const token = getToken();
-      if (!token) throw new Error("Token requis.");
+      const token = getToken(); // ✅ Token demandé ici UNIQUEMENT
+      if (!token) throw new Error("Token requis pour sauvegarder.");
       const url = `https://api.github.com/repos/mekeirish/${repoName}/contents/don.json`;
       const jsonContent = JSON.stringify(content, null, 2);
       const encoded = btoa(unescape(encodeURIComponent(jsonContent)));
@@ -276,7 +274,7 @@
       setMsg({ text: "Produit supprimé", type: "info" });
     };
 
-    // ---- COMMIT ----
+    // ---- COMMIT (sauvegarde sur GitHub) ----
     const handleCommit = async () => {
       setIsCommitting(true);
       try {
@@ -514,7 +512,7 @@
           </div>
         )}
 
-        {/* --- MODALS --- */}
+        {/* --- MODALS (inchangées) --- */}
         {/* Modal mot de passe */}
         {showPasswordModal && (
           <div className="fixed inset-0 z-[150] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowPasswordModal(false)}>
