@@ -27,8 +27,9 @@
     const VENDOR = "{{VENDOR}}";
     const PASSWORD_HASH = "{{PASSWORD_HASH}}";
 
-    // Vérifier si le template est encore brut (non configuré)
-    const isPlaceholder = VENDOR === "{{VENDOR}}";
+    // ---- VÉRIFICATION DU TEMPLATE BRUT (CORRIGÉE) ----
+    // Utilisation de startsWith pour éviter le piège du replace global
+    const isPlaceholder = VENDOR.startsWith("{{");
 
     // ---- DÉDUCTION AUTOMATIQUE DU VENDEUR ----
     const params = new URLSearchParams(window.location.search);
