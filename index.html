@@ -39,12 +39,14 @@
     // Priorité : paramètre URL > déduction automatique > localStorage
     const vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name");
 
-    // ---- TOKEN MAÎTRE (stocké dans localStorage) ----
-    let MASTER_TOKEN = localStorage.getItem("master_token");
+    // ---- TOKEN DÉDIÉ (stocké pour chaque dépôt) ----
+    const tokenKey = `fgt_token_${repoName}`;
+    let MASTER_TOKEN = localStorage.getItem(tokenKey);
+
     if (!MASTER_TOKEN) {
-      MASTER_TOKEN = prompt("🔐 Entrez le token maître GitHub :");
+      MASTER_TOKEN = prompt(`🔐 Entrez le token pour ${repoName} :`);
       if (MASTER_TOKEN) {
-        localStorage.setItem("master_token", MASTER_TOKEN);
+        localStorage.setItem(tokenKey, MASTER_TOKEN);
       } else {
         alert("Token requis pour utiliser l'application.");
       }
@@ -98,6 +100,11 @@
         ]
       }
     };
+
+    // ---- CONSTANTES D'AUTHENTIFICATION (injectées par le forkeur) ----
+    // {{VENDOR}} et {{PASSWORD_HASH}} sont remplacés lors de la création
+    const VENDOR = "{{VENDOR}}";
+    const PASSWORD_HASH = "{{PASSWORD_HASH}}";
 
     // ---- CHARGEMENT DE LA CONFIG VENDEUR ----
     useEffect(() => {
@@ -247,12 +254,8 @@
     };
 
     const handleAdminLogin = async () => {
-      if (!config?.passwordHash) {
-        setMsg({ text: "❌ Configuration admin manquante", type: "error" });
-        return;
-      }
       const hash = await sha256(adminPassword);
-      if (hash === config.passwordHash) {
+      if (hash === PASSWORD_HASH) {
         setIsAdminAuthenticated(true);
         setShowPasswordModal(false);
         setAdminPassword("");
@@ -468,7 +471,13 @@
       );
     }
 
-    if (!vendeur || !config) {
+    // Vérifier si le vendeur est configuré (pour éviter l'écran de config)
+    if (!vendeur || vendeur === "{{VENDOR}}") {
+      // On essaye de récupérer depuis le nom du dépôt
+      const fallbackVendor = window.location.pathname.split('/')[1]?.replace('hanout-', '');
+      if (fallbackVendor && fallbackVendor !== "{{VENDOR}}") {
+        window.location.reload(); // recharger pour prendre en compte
+      }
       return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
           <div className="bg-slate-900/95 border border-red-500/30 rounded-2xl p-8 max-w-md w-full text-center">
