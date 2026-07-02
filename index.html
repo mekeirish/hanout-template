@@ -13,11 +13,10 @@
   <!-- Cloudinary Widget -->
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 
-  <!-- Petites surcharges CSS pour les détails (pas de classes Tailwind spécifiques) -->
   <style>
     /* Scrollbar personnalisée */
     ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.5); }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 8px; }
 
     /* Animation fade-in pour les modales */
@@ -31,7 +30,7 @@
 
     /* Spinner */
     .spinner {
-      border: 3px solid #334155;
+      border: 3px solid rgba(51, 65, 85, 0.4);
       border-top: 3px solid #3b82f6;
       border-radius: 50%;
       width: 40px;
@@ -538,8 +537,8 @@
         var options = field.options === "categories" ? (editableData?.categories || []) : [];
         return (
           <div key={field.key} className="flex flex-col gap-1 w-full">
-            <label className="text-sm text-slate-400">{field.label}</label>
-            <select value={val} onChange={onChange} className="w-full px-4 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+            <label className="text-sm text-slate-300">{field.label}</label>
+            <select value={val} onChange={onChange} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all">
               <option value="">Choisir...</option>
               {options.map(function(opt) {
                 return <option key={opt.id} value={opt.id}>{opt.icon} {opt.name}</option>;
@@ -552,8 +551,8 @@
       if (field.type === "textarea") {
         return (
           <div key={field.key} className="flex flex-col gap-1 w-full">
-             <label className="text-sm text-slate-400">{field.label}</label>
-             <textarea value={val} onChange={onChange} placeholder={field.label} rows={field.rows || 3} className="w-full px-4 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y" />
+             <label className="text-sm text-slate-300">{field.label}</label>
+             <textarea value={val} onChange={onChange} placeholder={field.label} rows={field.rows || 3} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all resize-y" />
           </div>
         );
       }
@@ -561,12 +560,12 @@
       if (field.key === 'image') {
         return (
           <div key={field.key} className="flex flex-col gap-1 w-full">
-            <label className="text-sm text-slate-400">{field.label}</label>
+            <label className="text-sm text-slate-300">{field.label}</label>
             <div className="flex gap-2 items-center">
-              <input type="text" step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={field.label} className="flex-1 w-full px-4 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-              <button onClick={function() { openCloudinaryWidget(field.key); }} className="btn btn-primary btn-icon" type="button" title="Upload">📷</button>
+              <input type="text" step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={field.label} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 flex-1 px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+              <button onClick={function() { openCloudinaryWidget(field.key); }} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm px-3 py-2 rounded-xl text-sm font-medium" type="button" title="Upload">📷</button>
               {val && (
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-slate-800 border border-slate-700">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-slate-800/50 border border-white/10">
                   <img src={val} alt="aperçu" className="w-full h-full object-cover" onError={function(e) { e.target.style.display = 'none'; }} />
                 </div>
               )}
@@ -577,8 +576,8 @@
       
       return (
         <div key={field.key} className="flex flex-col gap-1 w-full">
-          <label className="text-sm text-slate-400">{field.label}</label>
-          <input type={field.type || "text"} step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={field.label} className="w-full px-4 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
+          <label className="text-sm text-slate-300">{field.label}</label>
+          <input type={field.type || "text"} step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={field.label} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
         </div>
       );
     };
@@ -586,17 +585,17 @@
     // ---- RENDU PRINCIPAL ----
     if (isLoading) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           <div className="spinner"></div>
-          <p className="text-slate-400 mt-4 text-sm">Chargement du catalogue...</p>
+          <p className="text-slate-400 mt-4 text-sm drop-shadow-md">Chargement du catalogue...</p>
         </div>
       );
     }
     
     if (!vendeur || isPlaceholder) {
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
-          <div className="max-w-sm w-full bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl p-6 text-center">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl max-w-sm w-full p-6 rounded-2xl text-center">
             <h2 className="text-red-400 font-bold text-lg">Configuration requise</h2>
             <p className="text-sm text-slate-400 mt-2">{isPlaceholder ? "Template non configuré." : "Vendeur incorrect."}</p>
             <p className="text-xs text-slate-500 mt-1">Utilisez le forkeur.</p>
@@ -610,22 +609,22 @@
     var cartCount = cart.reduce(function(s, i) { return s + i.quantity; }, 0);
 
     return (
-      <div className="min-h-screen bg-slate-900 text-slate-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
 
-        {/* ---- HEADER (glass) ---- */}
-        <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        {/* ---- HEADER GLASS ---- */}
+        <header className="bg-slate-900/50 backdrop-blur-lg border-b border-white/10 sticky top-0 z-30 px-4 py-3">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold text-white truncate max-w-[50%]" title={settings.title || "Catalogue"}>
+            <h1 className="text-xl font-bold text-white truncate max-w-[50%] drop-shadow-md" title={settings.title || "Catalogue"}>
               {settings.title || "Catalogue"}
             </h1>
             <div className="flex items-center gap-2">
-              <button onClick={handleAdminClick} className="px-4 py-2 bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700 rounded-lg text-sm font-medium text-slate-200 transition-all">
+              <button onClick={handleAdminClick} className="bg-slate-700/30 hover:bg-slate-700/50 border border-white/10 text-slate-200 backdrop-blur-md transition-all px-4 py-2 rounded-xl text-sm font-medium">
                 Admin
               </button>
-              <button onClick={function() { setShowCart(true); }} className="relative px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium text-white transition-all">
+              <button onClick={function() { setShowCart(true); }} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm relative px-4 py-2 rounded-xl text-sm font-medium">
                 🛒 Panier
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] flex items-center justify-center px-1 border-2 border-slate-900">
+                  <span className="bg-red-500/80 backdrop-blur-sm border border-red-400/50 shadow-lg absolute -top-2 -right-2 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] flex items-center justify-center px-1">
                     {cartCount}
                   </span>
                 )}
@@ -637,14 +636,14 @@
         <main className="max-w-7xl mx-auto px-4 py-4">
           {/* ---- MESSAGES ---- */}
           {!sogUser && isReady && (
-            <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg text-yellow-200 text-sm flex items-center gap-2">
+            <div className="backdrop-blur-md mb-4 p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-xl text-yellow-200 text-sm flex items-center gap-2">
               <span>🔒 Mode Invité.</span>
               <a href="#" onClick={function(e) { e.preventDefault(); window.parent.postMessage({ type: 'SOG_LOGIN_REQUEST' }, '*'); }} className="text-yellow-400 hover:underline font-medium">Connectez-vous</a>
               <span>pour commander.</span>
             </div>
           )}
           {msg.text && (
-            <div className={'mb-4 p-3 rounded-lg border text-sm ' + (msg.type === 'success' ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : msg.type === 'error' ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-yellow-900/20 border-yellow-700/50 text-yellow-200')}>
+            <div className={'backdrop-blur-md mb-4 p-3 rounded-xl border text-sm ' + (msg.type === 'success' ? 'bg-emerald-900/20 border-emerald-700/30 text-emerald-200' : msg.type === 'error' ? 'bg-red-900/20 border-red-700/30 text-red-200' : 'bg-yellow-900/20 border-yellow-700/30 text-yellow-200')}>
               {msg.text}
             </div>
           )}
@@ -652,34 +651,34 @@
           {/* ---- ADMIN ---- */}
           {isAdmin && isAdminAuthenticated ? (
             <div>
-              <h2 className="text-2xl font-bold text-white mb-4">🛠 PANEL ADMIN</h2>
+              <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-md">🛠 PANEL ADMIN</h2>
 
-              <div className="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl p-4 mb-4">
+              <div className="bg-slate-800/30 backdrop-blur-md border border-white/10 shadow-lg p-4 rounded-2xl mb-4">
                 <h3 className="font-semibold text-white mb-3">⚙️ Configuration Générale</h3>
                 <div className="flex flex-col gap-3">
-                  <input type="text" value={editableData?.settings?.title || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, title: e.target.value } }); }} placeholder="Titre de la boutique" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                  <input type="text" value={editableData?.settings?.currency || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, currency: e.target.value } }); }} placeholder="Devise (ex: DZD, €)" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                  <input type="text" value={editableData?.settings?.ntfyTopic || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, ntfyTopic: e.target.value } }); }} placeholder="Topic Notifications (Ntfy)" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
+                  <input type="text" value={editableData?.settings?.title || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, title: e.target.value } }); }} placeholder="Titre de la boutique" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                  <input type="text" value={editableData?.settings?.currency || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, currency: e.target.value } }); }} placeholder="Devise (ex: DZD, €)" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                  <input type="text" value={editableData?.settings?.ntfyTopic || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, ntfyTopic: e.target.value } }); }} placeholder="Topic Notifications (Ntfy)" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
                 </div>
               </div>
 
-              <div className="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl p-4 mb-4">
+              <div className="bg-slate-800/30 backdrop-blur-md border border-white/10 shadow-lg p-4 rounded-2xl mb-4">
                 <h3 className="font-semibold text-white mb-3">🔑 Jeton GitHub (FGT)</h3>
                 <div className="flex gap-2 items-center">
-                  <input type="password" value={fgtToken} onChange={function(e) { setFgtToken(e.target.value); setIsTokenSaved(false); }} placeholder="Collez votre token ici..." className="flex-1 px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                  <button onClick={saveFgtToken} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium text-white transition-all">{isTokenSaved ? '✅ Sauvé' : '💾 Sauver'}</button>
+                  <input type="password" value={fgtToken} onChange={function(e) { setFgtToken(e.target.value); setIsTokenSaved(false); }} placeholder="Collez votre token ici..." className="bg-slate-900/50 backdrop-blur-sm border border-white/10 flex-1 px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                  <button onClick={saveFgtToken} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm px-4 py-2 rounded-xl text-sm font-medium">{isTokenSaved ? '✅ Sauvé' : '💾 Sauver'}</button>
                 </div>
               </div>
 
-              <div className="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl p-4 mb-4">
+              <div className="bg-slate-800/30 backdrop-blur-md border border-white/10 shadow-lg p-4 rounded-2xl mb-4">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-semibold text-white">📂 Catégories</h3>
-                  <button onClick={function() { openCatModal(null); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium text-white transition-all">+ Ajouter</button>
+                  <button onClick={function() { openCatModal(null); }} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm px-4 py-2 rounded-xl text-sm font-medium">+ Ajouter</button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(editableData?.categories || []).map(function(c) {
                     return (
-                      <div key={c.id} className="flex items-center gap-2 p-2 rounded-lg border border-slate-700 bg-slate-900/30">
+                      <div key={c.id} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
                         <span className="text-lg">{c.icon}</span>
                         <span className="text-sm truncate flex-1 text-white">{c.name}</span>
                         <button onClick={function() { openCatModal(c); }} className="text-blue-400 hover:text-blue-300 text-sm p-1">✎</button>
@@ -690,16 +689,16 @@
                 </div>
               </div>
 
-              <div className="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl p-4 mb-4">
+              <div className="bg-slate-800/30 backdrop-blur-md border border-white/10 shadow-lg p-4 rounded-2xl mb-4">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-semibold text-white">📦 Produits</h3>
-                  <button onClick={function() { openProdModal(null); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium text-white transition-all">+ Ajouter</button>
+                  <button onClick={function() { openProdModal(null); }} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm px-4 py-2 rounded-xl text-sm font-medium">+ Ajouter</button>
                 </div>
                 <div className="flex flex-col gap-2 max-h-96 overflow-y-auto pr-1">
                   {(editableData?.products || []).map(function(p) {
                     return (
-                      <div key={p.id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-700 bg-slate-900/30">
-                        <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-lg" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
+                      <div key={p.id} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+                        <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white truncate">{p.name}</p>
                           <p className="text-xs text-slate-400">{p.price}{currency} · {getCategoryName(p.categoryId)}</p>
@@ -713,22 +712,22 @@
                 </div>
               </div>
 
-              <button onClick={handleCommit} disabled={isCommitting} className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-all disabled:opacity-50">
+              <button onClick={handleCommit} disabled={isCommitting} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm w-full py-3 rounded-2xl font-semibold disabled:opacity-50 text-lg">
                 {isCommitting ? '⏳ Sauvegarde en cours...' : '💾 Pousser les modifications (Commit)'}
               </button>
             </div>
           ) : (
             // ---- CATALOGUE PUBLIC ----
             <div>
-              <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder="Rechercher un produit..." className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-4" />
+              <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder="Rechercher un produit..." className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all mb-4" />
 
               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                <button onClick={function() { setSelectedCategoryId(null); }} className={'px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ' + (!selectedCategoryId ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700/60')}>
+                <button onClick={function() { setSelectedCategoryId(null); }} className={'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all backdrop-blur-md border ' + (!selectedCategoryId ? 'bg-blue-500/30 border-blue-500/40 text-white shadow-lg' : 'bg-slate-800/40 border-white/10 text-slate-300 hover:bg-slate-700/50')}>
                   Tout voir
                 </button>
                 {(editableData?.categories || []).map(function(c) {
                   return (
-                    <button key={c.id} onClick={function() { setSelectedCategoryId(c.id); }} className={'px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ' + (selectedCategoryId === c.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700/60')}>
+                    <button key={c.id} onClick={function() { setSelectedCategoryId(c.id); }} className={'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all backdrop-blur-md border ' + (selectedCategoryId === c.id ? 'bg-blue-500/30 border-blue-500/40 text-white shadow-lg' : 'bg-slate-800/40 border-white/10 text-slate-300 hover:bg-slate-700/50')}>
                       <span>{c.icon}</span> {c.name}
                     </button>
                   );
@@ -739,15 +738,15 @@
                 {getFiltered().map(function(p) {
                   var isOutOfStock = p.stock <= 0;
                   return (
-                    <div key={p.id} className="bg-slate-800/70 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden hover:border-slate-500 transition-all">
-                      <div className="aspect-square bg-slate-900 overflow-hidden" onClick={function() { setExpandedImage(p.image); }}>
-                        <img src={p.image} alt={p.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" onError={function(e) { e.target.src = "https://via.placeholder.com/300"; }} />
+                    <div key={p.id} className="bg-slate-800/30 backdrop-blur-md border border-white/10 shadow-lg hover:-translate-y-1 hover:shadow-2xl hover:border-white/20 rounded-xl overflow-hidden transition-all duration-300">
+                      <div className="aspect-square bg-slate-900/50 overflow-hidden" onClick={function() { setExpandedImage(p.image); }}>
+                        <img src={p.image} alt={p.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" onError={function(e) { e.target.src = "https://via.placeholder.com/300"; }} />
                       </div>
                       <div className="p-3 flex flex-col gap-1">
                         <span className="text-xs text-slate-400 truncate">{getCategoryIcon(p.categoryId)} {getCategoryName(p.categoryId)}</span>
-                        <h3 className="text-sm font-semibold text-white line-clamp-2">{p.name}</h3>
+                        <h3 className="text-sm font-semibold text-white line-clamp-2 drop-shadow-md">{p.name}</h3>
                         <p className="text-base font-bold text-blue-400">{p.price}{currency}</p>
-                        <button onClick={function() { addToCart(p); }} disabled={isOutOfStock || !sogUser} className={'mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all ' + (isOutOfStock ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white')}>
+                        <button onClick={function() { addToCart(p); }} disabled={isOutOfStock || !sogUser} className={'mt-2 w-full py-2 rounded-xl text-sm font-medium transition-all ' + (isOutOfStock ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed border border-white/5' : 'bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md shadow-sm')}>
                           {isOutOfStock ? 'Rupture' : '🛒 Ajouter'}
                         </button>
                       </div>
@@ -757,7 +756,7 @@
               </div>
 
               {getFiltered().length === 0 && (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-slate-400 drop-shadow-md">
                   {searchQuery ? "Aucun résultat trouvé." : "Ce catalogue est vide."}
                 </div>
               )}
@@ -766,22 +765,22 @@
         </main>
 
         {/* =========================================
-            MODALES
+            MODALES (GLASS)
             ========================================= */}
 
         {/* MODALE ADMIN */}
         {showPasswordModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
-            <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-6 max-w-md w-full" onClick={function(e) { e.stopPropagation(); }}>
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">🔐 Accès restreint</h3>
+                <h3 className="text-xl font-bold text-white drop-shadow-md">🔐 Accès restreint</h3>
                 <button className="text-slate-400 hover:text-white text-3xl leading-none" onClick={function() { setShowPasswordModal(false); }}>×</button>
               </div>
               <p className="text-sm text-slate-400 mb-3">Veuillez saisir le mot de passe administrateur :</p>
-              <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder="Mot de passe..." className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-4" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
+              <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder="Mot de passe..." className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all mb-4" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
               <div className="flex gap-3">
-                <button onClick={handleAdminLogin} className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-all">Déverrouiller</button>
-                <button onClick={function() { setShowPasswordModal(false); }} className="flex-1 py-2 bg-slate-700/50 hover:bg-slate-700/80 rounded-lg text-white font-medium transition-all">Annuler</button>
+                <button onClick={handleAdminLogin} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm flex-1 py-2 rounded-xl font-medium">Déverrouiller</button>
+                <button onClick={function() { setShowPasswordModal(false); }} className="bg-slate-700/30 hover:bg-slate-700/50 border border-white/10 text-slate-200 backdrop-blur-md transition-all flex-1 py-2 rounded-xl font-medium">Annuler</button>
               </div>
             </div>
           </div>
@@ -789,62 +788,62 @@
 
         {/* MODALE IMAGE */}
         {expandedImage && (
-          <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setExpandedImage(null); }}>
+          <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setExpandedImage(null); }}>
             <div className="relative max-w-4xl w-full h-full flex items-center justify-center" onClick={function(e) { e.stopPropagation(); }}>
               <button className="absolute top-4 right-4 text-white text-4xl hover:text-slate-300 transition-colors" onClick={function() { setExpandedImage(null); }}>×</button>
-              <img src={expandedImage} alt="Zoom" className="max-h-full max-w-full object-contain rounded-lg" />
+              <img src={expandedImage} alt="Zoom" className="max-h-full max-w-full object-contain rounded-xl" />
             </div>
           </div>
         )}
 
         {/* MODALE PANIER */}
         {showCart && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setShowCart(false); }}>
-            <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={function() { setShowCart(false); }}>
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={function(e) { e.stopPropagation(); }}>
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">🛒 Mon Panier</h3>
+                <h3 className="text-xl font-bold text-white drop-shadow-md">🛒 Mon Panier</h3>
                 <button className="text-slate-400 hover:text-white text-3xl leading-none" onClick={function() { setShowCart(false); }}>×</button>
               </div>
 
               {cart.length === 0 ? (
-                <div className="text-center py-8 text-slate-400">Votre panier est vide.</div>
+                <div className="text-center py-8 text-slate-400 drop-shadow-md">Votre panier est vide.</div>
               ) : (
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
                     {cart.map(function(i) {
                       return (
-                        <div key={i.id} className="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-700 bg-slate-900/40">
+                        <div key={i.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">{i.name}</p>
+                            <p className="text-sm font-medium text-white truncate drop-shadow-md">{i.name}</p>
                             <p className="text-xs text-blue-400 font-bold">{i.price}{currency}</p>
                           </div>
                           <div className="flex items-center gap-1">
-                            <button onClick={function() { updateQty(i.id, -1); }} className="w-8 h-8 flex items-center justify-center bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-white text-lg font-bold transition-all">−</button>
+                            <button onClick={function() { updateQty(i.id, -1); }} className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-xl text-white text-lg font-bold transition-all">−</button>
                             <span className="w-8 text-center font-bold text-white">{i.quantity}</span>
-                            <button onClick={function() { updateQty(i.id, 1); }} className="w-8 h-8 flex items-center justify-center bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-white text-lg font-bold transition-all">+</button>
-                            <button onClick={function() { removeFromCart(i.id); }} className="w-8 h-8 flex items-center justify-center bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-400 font-bold transition-all">✕</button>
+                            <button onClick={function() { updateQty(i.id, 1); }} className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-xl text-white text-lg font-bold transition-all">+</button>
+                            <button onClick={function() { removeFromCart(i.id); }} className="w-8 h-8 flex items-center justify-center bg-red-500/20 hover:bg-red-500/30 rounded-xl text-red-400 font-bold transition-all">✕</button>
                           </div>
                         </div>
                       );
                     })}
                   </div>
 
-                  <div className="flex justify-between items-center py-3 border-t border-slate-700 text-lg font-bold">
-                    <span>Total</span>
+                  <div className="flex justify-between items-center py-3 border-t border-white/10 text-lg font-bold">
+                    <span className="drop-shadow-md">Total</span>
                     <span className="text-blue-400">{getTotal()}{currency}</span>
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder="Votre nom complet *" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                    <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder="Adresse de livraison *" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder="Numéro de téléphone *" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" />
-                    <textarea value={order.comments} onChange={function(e) { setOrder({ ...order, comments: e.target.value }); }} placeholder="Note ou instruction spéciale..." rows="2" className="w-full px-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y" />
+                    <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder="Votre nom complet *" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                    <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder="Adresse de livraison *" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder="Numéro de téléphone *" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all" />
+                    <textarea value={order.comments} onChange={function(e) { setOrder({ ...order, comments: e.target.value }); }} placeholder="Note ou instruction spéciale..." rows="2" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 w-full px-4 py-2 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all resize-y" />
                   </div>
 
-                  <button onClick={checkout} disabled={!sogUser} className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-all disabled:opacity-50">
+                  <button onClick={checkout} disabled={!sogUser} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm w-full py-3 rounded-xl font-semibold disabled:opacity-50 text-lg">
                     ✅ Valider ma commande
                   </button>
-                  {!sogUser && <p className="text-center text-xs text-yellow-500">Connexion SOG requise pour commander.</p>}
+                  {!sogUser && <p className="text-center text-xs text-yellow-500 drop-shadow-md">Connexion SOG requise pour commander.</p>}
                 </div>
               )}
             </div>
@@ -853,10 +852,10 @@
 
         {/* MODALE EDITION / CREATION */}
         {modal.open && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={closeModal}>
-            <div className="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 modal-animate" onClick={closeModal}>
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={function(e) { e.stopPropagation(); }}>
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-xl font-bold text-white drop-shadow-md">
                   {modal.creating ? '✨ Ajouter ' : '✏️ Modifier '}
                   {modal.type === 'category' ? 'une catégorie' : 'un produit'}
                 </h3>
@@ -874,10 +873,10 @@
               </div>
 
               <div className="flex gap-3 mt-5">
-                <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-all">
+                <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-100 backdrop-blur-md transition-all shadow-sm flex-1 py-2 rounded-xl font-medium">
                   {modal.creating ? 'Créer' : 'Enregistrer'}
                 </button>
-                <button onClick={closeModal} className="flex-1 py-2 bg-slate-700/50 hover:bg-slate-700/80 rounded-lg text-white font-medium transition-all">Annuler</button>
+                <button onClick={closeModal} className="bg-slate-700/30 hover:bg-slate-700/50 border border-white/10 text-slate-200 backdrop-blur-md transition-all flex-1 py-2 rounded-xl font-medium">Annuler</button>
               </div>
             </div>
           </div>
