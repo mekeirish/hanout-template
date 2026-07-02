@@ -585,9 +585,9 @@
           folder: 'hanout_products',
           resourceType: 'image',
           clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-          maxImageFileSize: 5000000, // 5MB
-          maxImageWidth: 800,   // REDIMENSIONNEMENT : 800px max
-          maxImageHeight: 800,  // REDIMENSIONNEMENT : 800px max
+          maxImageFileSize: 5000000,
+          maxImageWidth: 800,
+          maxImageHeight: 800,
           styles: {
             palette: {
               window: '#1e293b', sourceBg: '#0f172a', windowBorder: '#334155',
@@ -1224,7 +1224,7 @@
           </div>
         )}
 
-        {/* MODALE PANIER */}
+        {/* ---- MODALE PANIER (CORRIGÉE : SANS IMAGE) ---- */}
         {showCart && (
           <div className="modal-overlay" onClick={function() { setShowCart(false); }}>
             <div className="modal-card" onClick={function(e) { e.stopPropagation(); }}>
@@ -1237,18 +1237,16 @@
                 <div className="text-center py-8 text-gray">Votre panier est tristement vide.</div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {/* Liste d'articles */}
+                  {/* Liste d'articles : sans image, seulement le nom */}
                   <div className="flex flex-col gap-2" style={{ maxHeight: '250px', overflowY: 'auto' }}>
                     {cart.map(function(i) {
                       return (
-                        <div key={i.id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-700 bg-slate-800/50">
-                          <img src={i.image} alt={i.name} className="w-12 h-12 object-cover rounded-md" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
+                        <div key={i.id} className="flex items-center justify-between gap-3 p-2 rounded-lg border border-slate-700 bg-slate-800/50">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{i.name}</p>
                             <p className="text-xs text-blue font-bold">{i.price}{currency}</p>
                           </div>
                           
-                          {/* Boutons d'action panier nettoyés */}
                           <div className="flex items-center gap-1">
                             <button onClick={function() { updateQty(i.id, -1); }} className="btn btn-secondary btn-icon">−</button>
                             <span className="text-white font-bold w-6 text-center">{i.quantity}</span>
@@ -1265,7 +1263,6 @@
                     <span className="text-blue">{getTotal()}{currency}</span>
                   </div>
 
-                  {/* Formulaire de commande */}
                   <div className="flex flex-col gap-3">
                     <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder="Votre nom complet *" className="input" />
                     <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder="Adresse de livraison *" className="input" />
