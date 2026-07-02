@@ -569,7 +569,7 @@
       }
     };
 
-    // ---- CLOUDINARY ----
+    // ---- CLOUDINARY (AVEC REDIMENSIONNEMENT) ----
     var openCloudinaryWidget = function(fieldKey) {
       if (!window.cloudinary) {
         alert("Le widget Cloudinary n'est pas chargé.");
@@ -585,7 +585,9 @@
           folder: 'hanout_products',
           resourceType: 'image',
           clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-          maxImageFileSize: 5000000,
+          maxImageFileSize: 5000000, // 5MB
+          maxImageWidth: 800,   // REDIMENSIONNEMENT : 800px max
+          maxImageHeight: 800,  // REDIMENSIONNEMENT : 800px max
           styles: {
             palette: {
               window: '#1e293b', sourceBg: '#0f172a', windowBorder: '#334155',
@@ -1126,7 +1128,7 @@
                 {(editableData?.products || []).map(function(p) {
                   return (
                     <div key={p.id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-700 bg-slate-800/50">
-                      <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-md" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
+                      <img src={p.image} alt={p.name} className="w-8 h-8 object-cover rounded-md" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">{p.name}</p>
                         <p className="text-xs text-gray">{p.price}{currency} · {getCategoryName(p.categoryId)}</p>
