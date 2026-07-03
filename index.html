@@ -886,43 +886,67 @@
                 <p className="text-xs text-gray-400 mt-1">{decodeEntities(TEXTS.fgtInfo)}</p>
               </div>
 
+              {/* ---- LISTE DES CATÉGORIES (améliorée) ---- */}
               <div className="glass-card p-6 rounded-2xl">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-white">{decodeEntities(TEXTS.categories)}</h3>
-                  <button onClick={function() { openCatModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">{decodeEntities(TEXTS.addCategory)}</button>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.categories)}</h3>
+                  <button onClick={function() { openCatModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">
+                    {decodeEntities(TEXTS.addCategory)}
+                  </button>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="space-y-2">
                   {(editableData?.categories || []).map(function(c) {
                     return (
-                      <div key={c.id} className={'flex items-center gap-2 p-2 rounded-xl bg-white/5 border ' + (hasPending(c, "category") ? 'border-yellow-700/50' : 'border-white/10')}>
-                        <span className="flex-1 text-sm truncate text-white">{decodeEntities(c.name)}</span>
-                        <button onClick={function() { openCatModal(c); }} className="text-gray-400 hover:text-white text-sm">{decodeEntities(TEXTS.modify)}</button>
-                        <button onClick={function() { deleteCategory(c.id); }} className="text-red-400 hover:text-red-300 text-sm">{decodeEntities(TEXTS.delete)}</button>
+                      <div key={c.id} className={'flex items-center justify-between p-3 rounded-xl bg-white/5 border ' + (hasPending(c, "category") ? 'border-yellow-700/50' : 'border-white/10')}>
+                        <span className="text-sm text-white font-medium">{decodeEntities(c.name)}</span>
+                        <div className="flex gap-2">
+                          <button onClick={function() { openCatModal(c); }} className="text-gray-400 hover:text-white text-sm px-2 py-1 rounded bg-white/5">
+                            {decodeEntities(TEXTS.modify)}
+                          </button>
+                          <button onClick={function() { deleteCategory(c.id); }} className="text-red-400 hover:text-red-300 text-sm px-2 py-1 rounded bg-white/5">
+                            {decodeEntities(TEXTS.delete)}
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
+                  {editableData?.categories?.length === 0 && (
+                    <p className="text-gray-400 text-sm text-center py-4">Aucune catégorie pour l'instant.</p>
+                  )}
                 </div>
               </div>
 
+              {/* ---- LISTE DES PRODUITS (améliorée) ---- */}
               <div className="glass-card p-6 rounded-2xl">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold text-white">{decodeEntities(TEXTS.products)}</h3>
-                  <button onClick={function() { openProdModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">{decodeEntities(TEXTS.addProduct)}</button>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.products)}</h3>
+                  <button onClick={function() { openProdModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">
+                    {decodeEntities(TEXTS.addProduct)}
+                  </button>
                 </div>
                 <div className="space-y-2">
                   {(editableData?.products || []).map(function(p) {
                     return (
-                      <div key={p.id} className={'flex items-center gap-3 p-2 rounded-xl bg-white/5 border ' + (hasPending(p, "product") ? 'border-yellow-700/50' : 'border-white/10')}>
+                      <div key={p.id} className={'flex items-center gap-3 p-3 rounded-xl bg-white/5 border ' + (hasPending(p, "product") ? 'border-yellow-700/50' : 'border-white/10')}>
                         <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-white">{decodeEntities(p.name)}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">{decodeEntities(p.name)}</p>
                           <p className="text-xs text-gray-400">{p.price}{currency} · {decodeEntities(getCategoryName(p.categoryId))} · {decodeEntities(TEXTS.stockInfo)}{p.stock}</p>
                         </div>
-                        <button onClick={function() { openProdModal(p); }} className="text-gray-400 hover:text-white text-sm">{decodeEntities(TEXTS.modify)}</button>
-                        <button onClick={function() { deleteProduct(p.id); }} className="text-red-400 hover:text-red-300 text-sm">{decodeEntities(TEXTS.delete)}</button>
+                        <div className="flex gap-2 flex-shrink-0">
+                          <button onClick={function() { openProdModal(p); }} className="text-gray-400 hover:text-white text-sm px-2 py-1 rounded bg-white/5">
+                            {decodeEntities(TEXTS.modify)}
+                          </button>
+                          <button onClick={function() { deleteProduct(p.id); }} className="text-red-400 hover:text-red-300 text-sm px-2 py-1 rounded bg-white/5">
+                            {decodeEntities(TEXTS.delete)}
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
+                  {editableData?.products?.length === 0 && (
+                    <p className="text-gray-400 text-sm text-center py-4">Aucun produit pour l'instant.</p>
+                  )}
                 </div>
               </div>
 
@@ -933,6 +957,7 @@
               </div>
             </div>
           ) : (
+            // ---- PARTIE PUBLIQUE (inchangée) ----
             <div>
               <div className="mb-4">
                 <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder={decodeEntities(TEXTS.search)} className="glass-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 outline-none" />
@@ -1004,7 +1029,7 @@
           )}
         </div>
 
-        {/* ---- MODALS ---- */}
+        {/* ---- MODALS (inchangées) ---- */}
 
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
