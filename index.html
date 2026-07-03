@@ -162,7 +162,7 @@
     }
   };
 
-  // ---- TOUS LES TEXTES EN ENTITÉS HTML (pour échapper l'UTF-8) ----
+  // ---- TEXTES EN ENTITÉS HTML (sans aucun emoji) ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
@@ -211,7 +211,6 @@
     create: "Cr&eacute;er",
     save: "Sauvegarder",
     choose: "Choisir...",
-    iconLabel: "Ic&ocirc;ne",
     nameLabel: "Nom",
     priceLabel: "Prix",
     imageLabel: "URL image",
@@ -289,19 +288,16 @@
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
 
-    // Schéma sans icônes
+    // ---- SCHÉMA SANS AUCUNE RÉFÉRENCE À UNE ICÔNE ----
     var schema = {
       categories: {
         label: TEXTS.categories,
-        icon: "",
         fields: [
-          { key: "icon", label: TEXTS.iconLabel, type: "text", maxLength: 2, default: "" },
           { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
         ]
       },
       products: {
         label: TEXTS.products,
-        icon: "",
         fields: [
           { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
           { key: "price", label: TEXTS.priceLabel, type: "number", step: "0.01", required: true },
@@ -720,8 +716,6 @@
       var cat = data?.categories?.find(function(c) { return c.id === id; });
       return cat ? cat.name : "Sans catégorie";
     };
-
-    var getCategoryIcon = function(id) { return ""; };
 
     var hasPending = function(item, type) {
       if (!data) return false;
