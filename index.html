@@ -167,17 +167,14 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <link rel="apple-touch-icon" href="icon.png" />
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4b6cb7">
-<link rel="apple-touch-icon" href="icon.png"></head>
+</head>
 <body>
 <div id="root"></div>
 
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
 
-  // ---- DÉCODE LES ENTITÉS HTML (SOLUTION MAGIQUE) ----
+  // ---- DÉCODE LES ENTITÉS HTML ----
   var decodeEntities = function(str) {
     if (!str) return "";
     try {
@@ -189,7 +186,7 @@
     }
   };
 
-  // ---- TEXTES STATIQUES AVEC UNICODE (IMMUNISÉS) ----
+  // ---- TEXTES STATIQUES (tous les emojis ont été remplacés par du texte ou des symboles ASCII) ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
@@ -319,19 +316,19 @@
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
 
-    // ---- SCHÉMA ----
+    // ---- SCHÉMA (icônes remplacées par des lettres) ----
     var schema = {
       categories: {
         label: TEXTS.categories,
-        icon: "\uD83D\uDCC2",
+        icon: "C",
         fields: [
-          { key: "icon", label: TEXTS.iconLabel, type: "text", maxLength: 2, default: "\uD83D\uDCC1" },
+          { key: "icon", label: TEXTS.iconLabel, type: "text", maxLength: 2, default: "C" },
           { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
         ]
       },
       products: {
         label: TEXTS.products,
-        icon: "\uD83D\uDCE6",
+        icon: "P",
         fields: [
           { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
           { key: "price", label: TEXTS.priceLabel, type: "number", step: "0.01", required: true },
@@ -342,7 +339,7 @@
       }
     };
 
-    // ---- ENCODAGE UTF-8 & BASE64 ROBUSTES ----
+    // ---- ENCODAGE UTF-8 & BASE64 ----
     var utf8ToBase64 = function(str) {
       try {
         return btoa(unescape(encodeURIComponent(str)));
@@ -371,7 +368,7 @@
       return cleaned;
     };
 
-    // ---- CLOUDINARY WIDGET ----
+    // ---- CLOUDINARY WIDGET (bouton "Upload" sans emoji) ----
     var openCloudinaryWidget = function(fieldKey) {
       if (!window.cloudinary) {
         alert(decodeEntities(TEXTS.imageError));
@@ -426,7 +423,6 @@
     useEffect(function() {
       var handleMessage = function(event) {
         if (event.data.type === 'SOG_AUTH') {
-          // Nettoyer les données utilisateur reçues
           var cleaned = cleanSogUser(event.data.payload.user);
           setSogUser(cleaned);
         }
@@ -783,7 +779,8 @@
 
     var getCategoryIcon = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
-      return cat ? cat.icon : "\uD83D\uDCC1";
+      // On retourne un simple indicateur textuel au lieu d'un emoji
+      return cat ? "[" + cat.name.charAt(0).toUpperCase() + "]" : "";
     };
 
     var hasPending = function(item, type) {
@@ -838,7 +835,7 @@
           <div key={field.key} className="flex gap-2 items-center">
             <input type="text" step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={decodeEntities(field.label)} className="glass-input flex-1 px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
             <button onClick={function() { openCloudinaryWidget(field.key); }} className="glass-btn px-3 py-2 rounded-xl text-sm font-medium" type="button" title={decodeEntities(TEXTS.uploadImage)}>
-              📷
+              Upload
             </button>
             {val && (
               <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-slate-800/50 border border-white/10">
@@ -947,11 +944,11 @@
                     className="glass-input flex-1 px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
                   />
                   <button onClick={saveFgtToken} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">
-                    {isTokenSaved ? '✅ ' + decodeEntities(TEXTS.save) : '💾 ' + decodeEntities(TEXTS.save)}
+                    {isTokenSaved ? '✓ ' + decodeEntities(TEXTS.save) : '⬇ ' + decodeEntities(TEXTS.save)}
                   </button>
                 </div>
                 {isTokenSaved && (
-                  <p className="text-xs text-emerald-400 mt-2">✅ {decodeEntities(TEXTS.fgtSaved)}</p>
+                  <p className="text-xs text-emerald-400 mt-2">✓ {decodeEntities(TEXTS.fgtSaved)}</p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">{decodeEntities(TEXTS.fgtInfo)}</p>
               </div>
@@ -965,7 +962,7 @@
                   {(editableData?.categories || []).map(function(c) {
                     return (
                       <div key={c.id} className={'flex items-center gap-2 p-2 rounded-xl bg-white/5 border ' + (hasPending(c, "category") ? 'border-yellow-700/50' : 'border-white/10')}>
-                        <span className="text-xl">{c.icon}</span>
+                        <span className="text-xl">{c.icon || '#'}</span>
                         <span className="flex-1 text-sm truncate text-white">{decodeEntities(c.name)}</span>
                         <button onClick={function() { openCatModal(c); }} className="text-gray-400 hover:text-white text-sm">{decodeEntities(TEXTS.modify)}</button>
                         <button onClick={function() { deleteCategory(c.id); }} className="text-red-400 hover:text-red-300 text-sm">{decodeEntities(TEXTS.delete)}</button>
@@ -999,7 +996,7 @@
 
               <div className="glass-card p-6 rounded-2xl">
                 <button onClick={handleCommit} disabled={isCommitting} className={'glass-btn w-full py-3 rounded-xl font-semibold ' + (isCommitting ? 'opacity-50' : '')}>
-                  {isCommitting ? '⏳ ' + decodeEntities(TEXTS.saving) : '💾 ' + decodeEntities(TEXTS.commit)}
+                  {isCommitting ? '⌛ ' + decodeEntities(TEXTS.saving) : '⬇ ' + decodeEntities(TEXTS.commit)}
                 </button>
               </div>
             </div>
@@ -1016,7 +1013,7 @@
                 {(editableData?.categories || []).map(function(c) {
                   return (
                     <button key={c.id} onClick={function() { setSelectedCategoryId(c.id); }} className={'glass-category px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ' + (selectedCategoryId === c.id ? 'active' : '')}>
-                      {c.icon} {decodeEntities(c.name)}
+                      {c.icon ? c.icon + ' ' : ''}{decodeEntities(c.name)}
                     </button>
                   );
                 })}
@@ -1047,7 +1044,7 @@
                         )}
                         {sogUser ? (
                           <button onClick={function() { addToCart(p); }} disabled={isOutOfStock} className={'glass-btn w-full mt-2 text-sm ' + (isOutOfStock ? 'opacity-50' : '')}>
-                            {isOutOfStock ? decodeEntities(TEXTS.outOfStock) : '🛒 ' + decodeEntities(TEXTS.addToCart)}
+                            {isOutOfStock ? decodeEntities(TEXTS.outOfStock) : decodeEntities(TEXTS.addToCart)}
                           </button>
                         ) : (
                           <button disabled className="glass-btn-secondary w-full mt-2 text-sm opacity-50 cursor-not-allowed">
@@ -1069,7 +1066,7 @@
               <div className="mt-8 text-center text-xs text-gray-500 border-t border-slate-800 pt-4">
                 {(data?.products || []).length} {decodeEntities(TEXTS.products)} · {(data?.categories || []).length} {decodeEntities(TEXTS.categories)}
                 {settings.ntfyTopic && <span className="ml-4">🔔 {settings.ntfyTopic}</span>}
-                {sogUser && <span className="ml-4">✅ {decodeEntities(TEXTS.connected)}</span>}
+                {sogUser && <span className="ml-4">✓ {decodeEntities(TEXTS.connected)}</span>}
               </div>
             </div>
           )}
@@ -1080,7 +1077,7 @@
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
             <div className="glass-modal max-w-md w-full p-6 rounded-2xl shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
-              <h3 className="text-xl font-bold text-white mb-4">🔐 {decodeEntities(TEXTS.passwordModalTitle)}</h3>
+              <h3 className="text-xl font-bold text-white mb-4">🔑 {decodeEntities(TEXTS.passwordModalTitle)}</h3>
               <p className="text-gray-300 text-sm mb-4">{decodeEntities(TEXTS.passwordPlaceholder)}</p>
               <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder={decodeEntities(TEXTS.passwordPlaceholder)} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
               <div className="flex gap-2 mt-4">
@@ -1105,7 +1102,7 @@
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowCart(false); }}>
             <div className="glass-modal max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
               <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold text-white mb-4">🛒 {decodeEntities(TEXTS.cartTitle)}</h3>
+                <h3 className="text-xl font-bold text-white mb-4">{decodeEntities(TEXTS.cartTitle)}</h3>
                 <button className="text-gray-400 hover:text-white text-3xl leading-none" onClick={function() { setShowCart(false); }}>×</button>
               </div>
               {cart.length === 0 ? (
@@ -1125,7 +1122,7 @@
                             <button onClick={function() { updateQty(i.id, -1); }} className="glass-btn-secondary text-xs px-2 py-1">−</button>
                             <span className="w-6 text-center text-white">{i.quantity}</span>
                             <button onClick={function() { updateQty(i.id, 1); }} className="glass-btn-secondary text-xs px-2 py-1">+</button>
-                            <button onClick={function() { removeFromCart(i.id); }} className="text-red-400 hover:text-red-300 text-sm ml-1">✕</button>
+                            <button onClick={function() { removeFromCart(i.id); }} className="text-red-400 hover:text-red-300 text-sm ml-1">×</button>
                           </div>
                         </div>
                       );
@@ -1151,7 +1148,7 @@
 
                   <div className="modal-action mt-4">
                     <button onClick={checkout} disabled={!sogUser || cart.length === 0} className={'glass-btn w-full py-3 rounded-xl font-semibold ' + (!sogUser || cart.length === 0 ? 'opacity-50' : '')}>
-                      ✅ {decodeEntities(TEXTS.validateOrder)}
+                      ✓ {decodeEntities(TEXTS.validateOrder)}
                     </button>
                   </div>
                 </div>
@@ -1164,7 +1161,7 @@
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={closeModal}>
             <div className="glass-modal max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
               <h3 className="text-xl font-bold text-white mb-4">
-                {modal.creating ? '✨ ' + (modal.type === "category" ? decodeEntities(TEXTS.newCategory) : decodeEntities(TEXTS.newProduct)) : '✏️ ' + (modal.type === "category" ? decodeEntities(TEXTS.editCategoryTitle) : decodeEntities(TEXTS.editProductTitle))}
+                {modal.creating ? '+ ' + (modal.type === "category" ? decodeEntities(TEXTS.newCategory) : decodeEntities(TEXTS.newProduct)) : '✎ ' + (modal.type === "category" ? decodeEntities(TEXTS.editCategoryTitle) : decodeEntities(TEXTS.editProductTitle))}
               </h3>
               <div className="space-y-3">
                 {modal.type === "category"
@@ -1177,7 +1174,7 @@
               </div>
               <div className="flex gap-2 mt-4">
                 <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="glass-btn flex-1 py-2 rounded-xl font-medium">
-                  {modal.creating ? '✅ ' + decodeEntities(TEXTS.create) : '💾 ' + decodeEntities(TEXTS.save)}
+                  {modal.creating ? '✓ ' + decodeEntities(TEXTS.create) : '⬇ ' + decodeEntities(TEXTS.save)}
                 </button>
                 <button onClick={closeModal} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">{decodeEntities(TEXTS.cancel)}</button>
               </div>
@@ -1201,7 +1198,5 @@
     });
   }
 </script>
-
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
 </body>
 </html>
