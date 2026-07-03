@@ -255,7 +255,7 @@
       if (fgtToken.trim()) {
         localStorage.setItem('fgt_token_' + repoName, fgtToken.trim());
         setIsTokenSaved(true);
-        setMsg({ text: "Token FGT sauvegardé avec succès !", type: "success" });
+        setMsg({ text: "Token FGT sauvegard\u00E9 avec succ\u00E8s !", type: "success" });
         MASTER_TOKEN = fgtToken.trim();
       } else {
         setMsg({ text: "Veuillez entrer un token valide.", type: "error" });
@@ -284,21 +284,21 @@
     // ---- SCHÉMA ----
     var schema = {
       categories: {
-        label: "Catégories",
-        icon: "📂",
+        label: "Cat\u00E9gories",
+        icon: "\uD83D\uDCC2",
         fields: [
-          { key: "icon", label: "Icône", type: "text", maxLength: 2, default: "📁" },
+          { key: "icon", label: "Ic\u00F4ne", type: "text", maxLength: 2, default: "\uD83D\uDCC1" },
           { key: "name", label: "Nom", type: "text", required: true },
         ]
       },
       products: {
         label: "Produits",
-        icon: "📦",
+        icon: "\uD83D\uDCE6",
         fields: [
           { key: "name", label: "Nom", type: "text", required: true },
           { key: "price", label: "Prix", type: "number", step: "0.01", required: true },
           { key: "image", label: "URL image", type: "text" },
-          { key: "categoryId", label: "Catégorie", type: "select", options: "categories" },
+          { key: "categoryId", label: "Cat\u00E9gorie", type: "select", options: "categories" },
           { key: "stock", label: "Stock", type: "number" },
         ]
       }
@@ -332,7 +332,7 @@
     // ---- CLOUDINARY WIDGET ----
     var openCloudinaryWidget = function(fieldKey) {
       if (!window.cloudinary) {
-        alert("Le widget Cloudinary n'est pas chargé.");
+        alert("Le widget Cloudinary n'est pas charg\u00E9.");
         return;
       }
 
@@ -377,7 +377,7 @@
             setFormData(function(prev) {
               return { ...prev, [fieldKey]: secureUrl };
             });
-            setMsg({ text: "Image téléchargée avec succès !", type: "success" });
+            setMsg({ text: "Image t\u00E9l\u00E9charg\u00E9e avec succ\u00E8s !", type: "success" });
           }
         }
       );
@@ -429,7 +429,7 @@
         var getRes = await fetch(url, { headers: { Authorization: "token " + token } });
         if (getRes.ok) { var d = await getRes.json(); sha = d.sha; }
       } catch (e) {}
-      var payload = { message: "Mise à jour", content: encoded, branch: "main" };
+      var payload = { message: "Mise \u00E0 jour", content: encoded, branch: "main" };
       if (sha) payload.sha = sha;
       var putRes = await fetch(url, {
         method: "PUT",
@@ -458,7 +458,7 @@
         setIsAdminAuthenticated(true);
         setShowPasswordModal(false);
         setAdminPassword("");
-        setMsg({ text: "Accès admin autorisé", type: "success" });
+        setMsg({ text: "Acc\u00E8s admin autoris\u00E9", type: "success" });
         setIsAdmin(true);
       } else {
         setMsg({ text: "Mot de passe incorrect", type: "error" });
@@ -501,17 +501,17 @@
       }
       setEditableData({ ...editableData });
       closeModal();
-      setMsg({ text: "Catégorie sauvegardée", type: "info" });
+      setMsg({ text: "Cat\u00E9gorie sauvegard\u00E9e", type: "info" });
     };
 
     var deleteCategory = function(id) {
-      if (!confirm("Supprimer cette catégorie ?")) return;
+      if (!confirm("Supprimer cette cat\u00E9gorie ?")) return;
       setEditableData({
         ...editableData,
         categories: editableData.categories.filter(function(c) { return c.id !== id; }),
         products: editableData.products.filter(function(p) { return p.categoryId !== id; }),
       });
-      setMsg({ text: "Catégorie supprimée", type: "info" });
+      setMsg({ text: "Cat\u00E9gorie supprim\u00E9e", type: "info" });
     };
 
     // ---- CRUD PRODUITS ----
@@ -551,13 +551,13 @@
       }
       setEditableData({ ...editableData });
       closeModal();
-      setMsg({ text: "Produit sauvegardé", type: "info" });
+      setMsg({ text: "Produit sauvegard\u00E9", type: "info" });
     };
 
     var deleteProduct = function(id) {
       if (!confirm("Supprimer ce produit ?")) return;
       setEditableData({ ...editableData, products: editableData.products.filter(function(p) { return p.id !== id; }) });
-      setMsg({ text: "Produit supprimé", type: "info" });
+      setMsg({ text: "Produit supprim\u00E9", type: "info" });
     };
 
     // ---- COMMIT ----
@@ -565,9 +565,9 @@
       setIsCommitting(true);
       try {
         await saveEditableData();
-        setMsg({ text: "Données sauvegardées sur GitHub", type: "success" });
+        setMsg({ text: "Donn\u00E9es sauvegard\u00E9es sur GitHub", type: "success" });
       } catch (err) {
-        setMsg({ text: "Échec : " + err.message, type: "error" });
+        setMsg({ text: "\u00C9chec : " + err.message, type: "error" });
       }
       setIsCommitting(false);
     };
@@ -576,7 +576,7 @@
     var addToCart = function(product) {
       if (product.stock <= 0) { alert("Rupture de stock"); return; }
       if (!sogUser) {
-        alert("Vous devez être connecté à SOG pour ajouter au panier.");
+        alert("Vous devez \u00EAtre connect\u00E9 \u00E0 SOG pour ajouter au panier.");
         return;
       }
       setCart(function(prev) {
@@ -639,7 +639,7 @@
     var checkout = async function() {
       if (cart.length === 0) { alert("Panier vide"); return; }
       if (!sogUser) {
-        alert("Vous devez être connecté à SOG pour commander.");
+        alert("Vous devez \u00EAtre connect\u00E9 \u00E0 SOG pour commander.");
         return;
       }
       if (!order.name.trim() || !order.address.trim() || !order.phone.trim()) {
@@ -653,13 +653,13 @@
       if (topic) {
         var currencySymbol = editableData?.settings?.currency || "€";
         var total = getTotal();
-        var message = "RÉCAPITULATIF\n\n";
+        var message = "R\u00C9CAPITULATIF\n\n";
         message += "Client : " + order.name + "\n";
         message += "Adresse : " + order.address + "\n";
-        message += "Tél : " + order.phone + "\n";
+        message += "T\u00E9l : " + order.phone + "\n";
         message += "Remarque : " + (order.comments || "Aucun") + "\n\n";
         message += "----------------------------------------\n\n";
-        message += "Articles commandés :\n";
+        message += "Articles command\u00E9s :\n";
         cart.forEach(function(i) {
           message += "  " + i.name + " x" + i.quantity + " = " + (i.price * i.quantity).toFixed(2) + " " + currencySymbol + "\n";
         });
@@ -676,18 +676,18 @@
       setCart([]);
       setOrder({ name: "", address: "", phone: "", comments: "" });
       setShowCart(false);
-      alert("Commande validée !");
+      alert("Commande valid\u00E9e !");
     };
 
     // ---- UTILITAIRES ----
     var getCategoryName = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
-      return cat ? cat.name : "Sans catégorie";
+      return cat ? cat.name : "Sans cat\u00E9gorie";
     };
 
     var getCategoryIcon = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
-      return cat ? cat.icon : "📁";
+      return cat ? cat.icon : "\uD83D\uDCC1";
     };
 
     var hasPending = function(item, type) {
@@ -755,15 +755,15 @@
               onClick={function() { openCloudinaryWidget(field.key); }}
               className="glass-btn px-3 py-2 rounded-xl text-sm font-medium"
               type="button"
-              title="Télécharger une image"
+              title="T\u00E9l\u00E9charger une image"
             >
-              📷
+              \uD83D\uDCF7
             </button>
             {val && (
               <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-slate-800/50 border border-white/10">
                 <img
                   src={val}
-                  alt="Aperçu"
+                  alt="Aper\u00E7u"
                   className="w-full h-full object-cover"
                   onError={function(e) { e.target.style.display = 'none'; }}
                 />
@@ -792,8 +792,8 @@
         <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
           <div className="glass max-w-md w-full p-6 rounded-2xl text-center">
             <h2 className="text-xl font-bold text-red-400">Configuration requise</h2>
-            <p className="text-gray-300 mt-2">{isPlaceholder ? "Le template n'a pas été configuré." : "Le vendeur n'a pas été configuré correctement."}</p>
-            <p className="text-sm text-gray-400 mt-2">Utilisez le forkeur pour créer une boutique.</p>
+            <p className="text-gray-300 mt-2">{isPlaceholder ? "Le template n'a pas \u00E9t\u00E9 configur\u00E9." : "Le vendeur n'a pas \u00E9t\u00E9 configur\u00E9 correctement."}</p>
+            <p className="text-sm text-gray-400 mt-2">Utilisez le forkeur pour cr\u00E9er une boutique.</p>
           </div>
         </div>
       );
@@ -812,11 +812,11 @@
               <h1 className="text-xl font-bold text-white">{settings.title || "Catalogue"}</h1>
               {sogUser ? (
                 <span className="text-xs bg-emerald-900/40 text-emerald-200 px-2 py-1 rounded-full">
-                  Connecté en tant que {sogUser.name}
+                  Connect\u00E9 en tant que {sogUser.name}
                 </span>
               ) : isReady ? (
                 <span className="text-xs bg-yellow-900/40 text-yellow-200 px-2 py-1 rounded-full">
-                  Invité
+                  Invit\u00E9
                 </span>
               ) : null}
             </div>
@@ -836,7 +836,7 @@
 
         {!sogUser && isReady && (
           <div className="mt-4 p-3 glass-alert bg-yellow-900/20 border-yellow-700/30 rounded-xl text-yellow-200 text-center">
-            Vous êtes en mode invité. <a href="#" onClick={function(e) { e.preventDefault(); window.parent.postMessage({ type: 'SOG_LOGIN_REQUEST' }, '*'); }} className="underline hover:text-yellow-100">Connectez-vous</a> pour passer une commande.
+            Vous \u00EAtes en mode invit\u00E9. <a href="#" onClick={function(e) { e.preventDefault(); window.parent.postMessage({ type: 'SOG_LOGIN_REQUEST' }, '*'); }} className="underline hover:text-yellow-100">Connectez-vous</a> pour passer une commande.
           </div>
         )}
 
@@ -878,9 +878,9 @@
                   </button>
                 </div>
                 {isTokenSaved && (
-                  <p className="text-xs text-emerald-400 mt-2">✅ Token sauvegardé dans votre navigateur.</p>
+                  <p className="text-xs text-emerald-400 mt-2">✅ Token sauvegard\u00E9 dans votre navigateur.</p>
                 )}
-                <p className="text-xs text-gray-400 mt-1">Le token est stocké localement dans votre navigateur.</p>
+                <p className="text-xs text-gray-400 mt-1">Le token est stock\u00E9 localement dans votre navigateur.</p>
               </div>
 
               {/* ---- Catégories ---- */}
@@ -992,14 +992,14 @@
 
               {getFiltered().length === 0 && (
                 <div className="text-center py-10 text-gray-400">
-                  {searchQuery ? "Aucun produit ne correspond." : "Aucun produit dans cette catégorie."}
+                  {searchQuery ? "Aucun produit ne correspond." : "Aucun produit dans cette cat\u00E9gorie."}
                 </div>
               )}
 
               <div className="mt-8 text-center text-xs text-gray-500 border-t border-slate-800 pt-4">
-                {(data?.products || []).length} PRODUITS · {(data?.categories || []).length} CATÉGORIES
+                {(data?.products || []).length} PRODUITS · {(data?.categories || []).length} CAT\u00C9GORIES
                 {settings.ntfyTopic && <span className="ml-4">🔔 {settings.ntfyTopic}</span>}
-                {sogUser && <span className="ml-4">✅ Connecté</span>}
+                {sogUser && <span className="ml-4">✅ Connect\u00E9</span>}
               </div>
             </div>
           )}
@@ -1010,7 +1010,7 @@
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
             <div className="glass-modal max-w-md w-full p-6 rounded-2xl shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
-              <h3 className="text-xl font-bold text-white mb-4">🔐 Accès admin</h3>
+              <h3 className="text-xl font-bold text-white mb-4">🔐 Acc\u00E8s admin</h3>
               <p className="text-gray-300 text-sm mb-4">Entrez votre mot de passe.</p>
               <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder="Mot de passe" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
               <div className="flex gap-2 mt-4">
@@ -1068,13 +1068,13 @@
                   <div className={'space-y-2 mt-4 ' + (!sogUser ? 'opacity-50 pointer-events-none' : '')}>
                     <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder="Nom complet *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
                     <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder="Adresse *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder="Téléphone *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder="T\u00E9l\u00E9phone *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
                     <textarea value={order.comments} onChange={function(e) { setOrder({ ...order, comments: e.target.value }); }} placeholder="Commentaires (facultatif)" rows="2" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none resize-y" />
                   </div>
 
                   {!sogUser && (
                     <div className="mt-2 text-yellow-400 text-sm text-center">
-                      🔒 Connectez-vous à SOG pour valider la commande
+                      🔒 Connectez-vous \u00E0 SOG pour valider la commande
                     </div>
                   )}
 
@@ -1093,7 +1093,7 @@
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={closeModal}>
             <div className="glass-modal max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
               <h3 className="text-xl font-bold text-white mb-4">
-                {modal.creating ? "✨ Nouveau " + (modal.type === "category" ? "catégorie" : "produit") : "✏️ Modifier " + (modal.type === "category" ? "la catégorie" : "le produit")}
+                {modal.creating ? "✨ Nouveau " + (modal.type === "category" ? "cat\u00E9gorie" : "produit") : "✏️ Modifier " + (modal.type === "category" ? "la cat\u00E9gorie" : "le produit")}
               </h3>
               <div className="space-y-3">
                 {modal.type === "category"
@@ -1106,7 +1106,7 @@
               </div>
               <div className="flex gap-2 mt-4">
                 <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="glass-btn flex-1 py-2 rounded-xl font-medium">
-                  {modal.creating ? '✅ Créer' : '💾 Sauvegarder'}
+                  {modal.creating ? '✅ Cr\u00E9er' : '💾 Sauvegarder'}
                 </button>
                 <button onClick={closeModal} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">Annuler</button>
               </div>
