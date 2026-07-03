@@ -14,7 +14,6 @@
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 
   <style>
-    /* ---------- GLASSMORPHISM BASE ---------- */
     .glass {
       background: rgba(30, 41, 59, 0.4);
       backdrop-filter: blur(16px);
@@ -129,8 +128,6 @@
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
-
-    /* ---------- UTILITAIRES ---------- */
     .modal-overlay {
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(4px);
@@ -162,8 +159,6 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
-    /* Animation fade-in pour les modales */
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
@@ -182,6 +177,101 @@
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
 
+  // ---- TEXTES STATIQUES AVEC ACCENTS ----
+  var TEXTS = {
+    admin: "Admin",
+    cart: "Panier",
+    cartEmpty: "Panier vide",
+    total: "Total",
+    validateOrder: "Valider la commande",
+    inviteMode: "Vous êtes en mode invité.",
+    connect: "Connectez-vous",
+    toOrder: "pour passer une commande.",
+    search: "Rechercher...",
+    all: "Tous",
+    noResult: "Aucun produit ne correspond.",
+    emptyCategory: "Aucun produit dans cette catégorie.",
+    products: "PRODUITS",
+    categories: "CATÉGORIES",
+    connected: "Connecté",
+    adminPanel: "PANEL ADMIN",
+    configTitle: "Configuration",
+    configCurrency: "Devise",
+    configTopic: "Topic ntfy",
+    fgtTitle: "Token FGT (pour le commit)",
+    fgtPlaceholder: "Entrez votre token fine-grained",
+    fgtSaved: "Token sauvegardé dans votre navigateur.",
+    fgtInfo: "Le token est stocké localement dans votre navigateur.",
+    addCategory: "Ajouter",
+    modify: "Modifier",
+    delete: "Supprimer",
+    addProduct: "Ajouter",
+    commit: "Sauvegarder (Commit)",
+    saving: "Sauvegarde...",
+    saveSuccess: "Données sauvegardées sur GitHub",
+    saveFail: "Échec : ",
+    passwordModalTitle: "Accès admin",
+    passwordPlaceholder: "Mot de passe",
+    validate: "Valider",
+    cancel: "Annuler",
+    loginRequired: "Connectez-vous à SOG pour valider la commande",
+    namePlaceholder: "Nom complet *",
+    addressPlaceholder: "Adresse *",
+    phonePlaceholder: "Téléphone *",
+    commentsPlaceholder: "Commentaires (facultatif)",
+    addCategoryTitle: "Nouvelle catégorie",
+    editCategoryTitle: "Modifier la catégorie",
+    addProductTitle: "Nouveau produit",
+    editProductTitle: "Modifier le produit",
+    create: "Créer",
+    save: "Sauvegarder",
+    choose: "Choisir...",
+    iconLabel: "Icône",
+    nameLabel: "Nom",
+    priceLabel: "Prix",
+    imageLabel: "URL image",
+    categoryLabel: "Catégorie",
+    stockLabel: "Stock",
+    uploadImage: "Télécharger une image",
+    preview: "Aperçu",
+    cartTitle: "Mon Panier",
+    addToCart: "Ajouter au panier",
+    outOfStock: "Rupture",
+    connectionRequired: "Connexion requise",
+    configRequired: "Configuration requise",
+    templateNotConfigured: "Le template n'a pas été configuré.",
+    vendorIncorrect: "Le vendeur n'a pas été configuré correctement.",
+    useForkeur: "Utilisez le forkeur pour créer une boutique.",
+    connectedAs: "Connecté en tant que",
+    invite: "Invité",
+    shopTitle: "Catalogue",
+    newCategory: "Nouvelle catégorie",
+    newProduct: "Nouveau produit",
+    imageUploaded: "Image téléchargée avec succès !",
+    imageError: "Erreur lors de l'upload de l'image.",
+    tokenSaved: "Token FGT sauvegardé avec succès !",
+    tokenInvalid: "Veuillez entrer un token valide.",
+    accessGranted: "Accès admin autorisé",
+    passwordIncorrect: "Mot de passe incorrect",
+    categorySaved: "Catégorie sauvegardée",
+    categoryDeleted: "Catégorie supprimée",
+    productSaved: "Produit sauvegardé",
+    productDeleted: "Produit supprimé",
+    categoryConfirmDelete: "Supprimer cette catégorie ?",
+    productConfirmDelete: "Supprimer ce produit ?",
+    stockInfo: "Stock: ",
+    rupture: "Rupture",
+    orderRecap: "RÉCAPITULATIF",
+    client: "Client",
+    address: "Adresse",
+    phone: "Tél",
+    comment: "Remarque",
+    none: "Aucun",
+    items: "Articles commandés",
+    totalLabel: "TOTAL",
+    newOrder: "NOUVELLE COMMANDE"
+  };
+
   function App() {
 
     // ---- CONSTANTES INJECTÉES PAR LE FORKEUR ----
@@ -195,74 +285,11 @@
     var deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
     var vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name") || VENDOR;
 
-    // ---- ÉTAT POUR L'UTILISATEUR SOG ----
+    // ---- ÉTATS ----
     var [sogUser, setSogUser] = useState(null);
     var [isReady, setIsReady] = useState(false);
-
-    // ---- ÉTAT POUR LE TOKEN FGT ----
     var [fgtToken, setFgtToken] = useState('');
     var [isTokenSaved, setIsTokenSaved] = useState(false);
-
-    // ---- ÉCOUTE DES MESSAGES DE SOG ----
-    useEffect(function() {
-      var handleMessage = function(event) {
-        if (event.data.type === 'SOG_AUTH') {
-          setSogUser(event.data.payload.user);
-        }
-      };
-      
-      window.addEventListener('message', handleMessage);
-      window.parent.postMessage({ type: 'SOG_READY' }, '*');
-      setIsReady(true);
-
-      return function() {
-        window.removeEventListener('message', handleMessage);
-      };
-    }, []);
-
-    // ---- CHARGEMENT DU TOKEN FGT DEPUIS LOCALSTORAGE ----
-    useEffect(function() {
-      var storedToken = localStorage.getItem('fgt_token_' + repoName);
-      if (storedToken) {
-        setFgtToken(storedToken);
-        setIsTokenSaved(true);
-      }
-    }, []);
-
-    // ---- TOKEN FGT ----
-    var MASTER_TOKEN = null;
-    function getToken() {
-      if (MASTER_TOKEN) return MASTER_TOKEN;
-      var tokenKey = "fgt_token_" + repoName;
-      var token = localStorage.getItem(tokenKey);
-      if (!token) {
-        token = prompt("Entrez le token pour " + repoName + " :");
-        if (token) {
-          localStorage.setItem(tokenKey, token);
-          setFgtToken(token);
-          setIsTokenSaved(true);
-        } else {
-          alert("Token requis pour cette action.");
-          return null;
-        }
-      }
-      MASTER_TOKEN = token;
-      return token;
-    }
-
-    // ---- SAUVEGARDE DU TOKEN FGT ----
-    var saveFgtToken = function() {
-      if (fgtToken.trim()) {
-        localStorage.setItem('fgt_token_' + repoName, fgtToken.trim());
-        setIsTokenSaved(true);
-        setMsg({ text: "Token FGT sauvegard\u00E9 avec succ\u00E8s !", type: "success" });
-        MASTER_TOKEN = fgtToken.trim();
-      } else {
-        setMsg({ text: "Veuillez entrer un token valide.", type: "error" });
-      }
-    };
-
-    // ---- ÉTATS ----
     var [isLoading, setIsLoading] = useState(true);
     var [data, setData] = useState(null);
     var [editableData, setEditableData] = useState(null);
@@ -284,27 +311,27 @@
     // ---- SCHÉMA ----
     var schema = {
       categories: {
-        label: "Cat\u00E9gories",
-        icon: "\uD83D\uDCC2",
+        label: TEXTS.categories,
+        icon: "📂",
         fields: [
-          { key: "icon", label: "Ic\u00F4ne", type: "text", maxLength: 2, default: "\uD83D\uDCC1" },
-          { key: "name", label: "Nom", type: "text", required: true },
+          { key: "icon", label: TEXTS.iconLabel, type: "text", maxLength: 2, default: "📁" },
+          { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
         ]
       },
       products: {
-        label: "Produits",
-        icon: "\uD83D\uDCE6",
+        label: TEXTS.products,
+        icon: "📦",
         fields: [
-          { key: "name", label: "Nom", type: "text", required: true },
-          { key: "price", label: "Prix", type: "number", step: "0.01", required: true },
-          { key: "image", label: "URL image", type: "text" },
-          { key: "categoryId", label: "Cat\u00E9gorie", type: "select", options: "categories" },
-          { key: "stock", label: "Stock", type: "number" },
+          { key: "name", label: TEXTS.nameLabel, type: "text", required: true },
+          { key: "price", label: TEXTS.priceLabel, type: "number", step: "0.01", required: true },
+          { key: "image", label: TEXTS.imageLabel, type: "text" },
+          { key: "categoryId", label: TEXTS.categoryLabel, type: "select", options: "categories" },
+          { key: "stock", label: TEXTS.stockLabel, type: "number" },
         ]
       }
     };
 
-    // ---- ENCODAGE UTF-8 POUR btoa ----
+    // ---- UTF-8 ----
     var utf8ToBase64 = function(str) {
       try {
         var utf8Bytes = new TextEncoder().encode(str);
@@ -315,7 +342,6 @@
       }
     };
 
-    // ---- DÉCODAGE UTF-8 POUR atob ----
     var base64ToUtf8 = function(str) {
       try {
         var binaryString = atob(str);
@@ -332,7 +358,7 @@
     // ---- CLOUDINARY WIDGET ----
     var openCloudinaryWidget = function(fieldKey) {
       if (!window.cloudinary) {
-        alert("Le widget Cloudinary n'est pas charg\u00E9.");
+        alert(TEXTS.imageError);
         return;
       }
 
@@ -367,21 +393,76 @@
         },
         function(error, result) {
           if (error) {
-            console.error("Erreur Cloudinary:", error);
-            alert("Erreur lors de l'upload de l'image.");
+            console.error("Cloudinary error:", error);
+            alert(TEXTS.imageError);
             return;
           }
-          
           if (result.event === 'success') {
             var secureUrl = result.info.secure_url;
             setFormData(function(prev) {
               return { ...prev, [fieldKey]: secureUrl };
             });
-            setMsg({ text: "Image t\u00E9l\u00E9charg\u00E9e avec succ\u00E8s !", type: "success" });
+            setMsg({ text: TEXTS.imageUploaded, type: "success" });
           }
         }
       );
       widget.open();
+    };
+
+    // ---- ECOUTE SOG ----
+    useEffect(function() {
+      var handleMessage = function(event) {
+        if (event.data.type === 'SOG_AUTH') {
+          setSogUser(event.data.payload.user);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+      window.parent.postMessage({ type: 'SOG_READY' }, '*');
+      setIsReady(true);
+      return function() {
+        window.removeEventListener('message', handleMessage);
+      };
+    }, []);
+
+    // ---- CHARGEMENT FGT ----
+    useEffect(function() {
+      var stored = localStorage.getItem('fgt_token_' + repoName);
+      if (stored) {
+        setFgtToken(stored);
+        setIsTokenSaved(true);
+      }
+    }, []);
+
+    // ---- TOKEN FGT ----
+    var MASTER_TOKEN = null;
+    function getToken() {
+      if (MASTER_TOKEN) return MASTER_TOKEN;
+      var tokenKey = "fgt_token_" + repoName;
+      var token = localStorage.getItem(tokenKey);
+      if (!token) {
+        token = prompt("Entrez le token pour " + repoName + " :");
+        if (token) {
+          localStorage.setItem(tokenKey, token);
+          setFgtToken(token);
+          setIsTokenSaved(true);
+        } else {
+          alert("Token requis pour cette action.");
+          return null;
+        }
+      }
+      MASTER_TOKEN = token;
+      return token;
+    }
+
+    var saveFgtToken = function() {
+      if (fgtToken.trim()) {
+        localStorage.setItem('fgt_token_' + repoName, fgtToken.trim());
+        setIsTokenSaved(true);
+        setMsg({ text: TEXTS.tokenSaved, type: "success" });
+        MASTER_TOKEN = fgtToken.trim();
+      } else {
+        setMsg({ text: TEXTS.tokenInvalid, type: "error" });
+      }
     };
 
     // ---- CHARGEMENT ----
@@ -393,11 +474,11 @@
           var res = await fetch(url);
           if (res.status === 404) {
             var defaultData = {
-              settings: { 
-                title: "Boutique de " + vendeur, 
-                currency: "DZD", 
-                showStock: true, 
-                ntfyTopic: vendeur + "_commandes" 
+              settings: {
+                title: "Boutique de " + vendeur,
+                currency: "DZD",
+                showStock: true,
+                ntfyTopic: vendeur + "_commandes"
               },
               categories: [],
               products: [],
@@ -429,7 +510,7 @@
         var getRes = await fetch(url, { headers: { Authorization: "token " + token } });
         if (getRes.ok) { var d = await getRes.json(); sha = d.sha; }
       } catch (e) {}
-      var payload = { message: "Mise \u00E0 jour", content: encoded, branch: "main" };
+      var payload = { message: "Mise à jour", content: encoded, branch: "main" };
       if (sha) payload.sha = sha;
       var putRes = await fetch(url, {
         method: "PUT",
@@ -458,10 +539,10 @@
         setIsAdminAuthenticated(true);
         setShowPasswordModal(false);
         setAdminPassword("");
-        setMsg({ text: "Acc\u00E8s admin autoris\u00E9", type: "success" });
+        setMsg({ text: TEXTS.accessGranted, type: "success" });
         setIsAdmin(true);
       } else {
-        setMsg({ text: "Mot de passe incorrect", type: "error" });
+        setMsg({ text: TEXTS.passwordIncorrect, type: "error" });
       }
     };
 
@@ -501,17 +582,17 @@
       }
       setEditableData({ ...editableData });
       closeModal();
-      setMsg({ text: "Cat\u00E9gorie sauvegard\u00E9e", type: "info" });
+      setMsg({ text: TEXTS.categorySaved, type: "info" });
     };
 
     var deleteCategory = function(id) {
-      if (!confirm("Supprimer cette cat\u00E9gorie ?")) return;
+      if (!confirm(TEXTS.categoryConfirmDelete)) return;
       setEditableData({
         ...editableData,
         categories: editableData.categories.filter(function(c) { return c.id !== id; }),
         products: editableData.products.filter(function(p) { return p.categoryId !== id; }),
       });
-      setMsg({ text: "Cat\u00E9gorie supprim\u00E9e", type: "info" });
+      setMsg({ text: TEXTS.categoryDeleted, type: "info" });
     };
 
     // ---- CRUD PRODUITS ----
@@ -551,13 +632,13 @@
       }
       setEditableData({ ...editableData });
       closeModal();
-      setMsg({ text: "Produit sauvegard\u00E9", type: "info" });
+      setMsg({ text: TEXTS.productSaved, type: "info" });
     };
 
     var deleteProduct = function(id) {
-      if (!confirm("Supprimer ce produit ?")) return;
+      if (!confirm(TEXTS.productConfirmDelete)) return;
       setEditableData({ ...editableData, products: editableData.products.filter(function(p) { return p.id !== id; }) });
-      setMsg({ text: "Produit supprim\u00E9", type: "info" });
+      setMsg({ text: TEXTS.productDeleted, type: "info" });
     };
 
     // ---- COMMIT ----
@@ -565,18 +646,18 @@
       setIsCommitting(true);
       try {
         await saveEditableData();
-        setMsg({ text: "Donn\u00E9es sauvegard\u00E9es sur GitHub", type: "success" });
+        setMsg({ text: TEXTS.saveSuccess, type: "success" });
       } catch (err) {
-        setMsg({ text: "\u00C9chec : " + err.message, type: "error" });
+        setMsg({ text: TEXTS.saveFail + err.message, type: "error" });
       }
       setIsCommitting(false);
     };
 
     // ---- PANIER ----
     var addToCart = function(product) {
-      if (product.stock <= 0) { alert("Rupture de stock"); return; }
+      if (product.stock <= 0) { alert(TEXTS.outOfStock); return; }
       if (!sogUser) {
-        alert("Vous devez \u00EAtre connect\u00E9 \u00E0 SOG pour ajouter au panier.");
+        alert(TEXTS.connect + " " + TEXTS.toOrder);
         return;
       }
       setCart(function(prev) {
@@ -616,7 +697,7 @@
       }, 0).toFixed(2);
     };
 
-    // ---- ENVOI DE LA COMMANDE À SOG ----
+    // ---- ENVOI COMMANDE À SOG ----
     var sendOrderToSOG = function(orderData) {
       window.parent.postMessage({
         type: 'SOG_ORDER',
@@ -637,57 +718,57 @@
 
     // ---- CHECKOUT ----
     var checkout = async function() {
-      if (cart.length === 0) { alert("Panier vide"); return; }
+      if (cart.length === 0) { alert(TEXTS.cartEmpty); return; }
       if (!sogUser) {
-        alert("Vous devez \u00EAtre connect\u00E9 \u00E0 SOG pour commander.");
+        alert(TEXTS.connect + " " + TEXTS.toOrder);
         return;
       }
       if (!order.name.trim() || !order.address.trim() || !order.phone.trim()) {
         alert("Veuillez remplir tous les champs obligatoires");
         return;
       }
-      
+
       sendOrderToSOG(order);
 
       var topic = editableData?.settings?.ntfyTopic;
       if (topic) {
         var currencySymbol = editableData?.settings?.currency || "€";
         var total = getTotal();
-        var message = "R\u00C9CAPITULATIF\n\n";
-        message += "Client : " + order.name + "\n";
-        message += "Adresse : " + order.address + "\n";
-        message += "T\u00E9l : " + order.phone + "\n";
-        message += "Remarque : " + (order.comments || "Aucun") + "\n\n";
+        var message = TEXTS.orderRecap + "\n\n";
+        message += TEXTS.client + " : " + order.name + "\n";
+        message += TEXTS.address + " : " + order.address + "\n";
+        message += TEXTS.phone + " : " + order.phone + "\n";
+        message += TEXTS.comment + " : " + (order.comments || TEXTS.none) + "\n\n";
         message += "----------------------------------------\n\n";
-        message += "Articles command\u00E9s :\n";
+        message += TEXTS.items + " :\n";
         cart.forEach(function(i) {
           message += "  " + i.name + " x" + i.quantity + " = " + (i.price * i.quantity).toFixed(2) + " " + currencySymbol + "\n";
         });
         message += "\n----------------------------------------\n\n";
-        message += "TOTAL : " + total + " " + currencySymbol;
+        message += TEXTS.totalLabel + " : " + total + " " + currencySymbol;
 
         await fetch("https://ntfy.sh/" + topic, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ topic: topic, title: "NOUVELLE COMMANDE", message: message, priority: 5 }),
+          body: JSON.stringify({ topic: topic, title: TEXTS.newOrder, message: message, priority: 5 }),
         }).catch(console.error);
       }
-      
+
       setCart([]);
       setOrder({ name: "", address: "", phone: "", comments: "" });
       setShowCart(false);
-      alert("Commande valid\u00E9e !");
+      alert("Commande validée !");
     };
 
     // ---- UTILITAIRES ----
     var getCategoryName = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
-      return cat ? cat.name : "Sans cat\u00E9gorie";
+      return cat ? cat.name : "Sans catégorie";
     };
 
     var getCategoryIcon = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
-      return cat ? cat.icon : "\uD83D\uDCC1";
+      return cat ? cat.icon : "📁";
     };
 
     var hasPending = function(item, type) {
@@ -716,7 +797,7 @@
       setModal({ open: false, type: "", item: null, creating: false });
     };
 
-    // ---- RENDER FIELD AVEC CLOUDINARY ----
+    // ---- RENDER FIELD ----
     var renderField = function(field) {
       var val = formData[field.key] || "";
       var onChange = function(e) {
@@ -727,7 +808,7 @@
         var options = field.options === "categories" ? (editableData?.categories || []) : [];
         return (
           <select key={field.key} value={val} onChange={onChange} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none">
-            <option value="">Choisir...</option>
+            <option value="">{TEXTS.choose}</option>
             {options.map(function(opt) {
               return <option key={opt.id} value={opt.id}>{opt.icon} {opt.name}</option>;
             })}
@@ -737,8 +818,7 @@
       if (field.type === "textarea") {
         return <textarea key={field.key} value={val} onChange={onChange} placeholder={field.label} rows={field.rows || 2} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none resize-y" />;
       }
-      
-      // ---- AJOUT : Bouton Cloudinary pour les champs image ----
+
       if (field.key === 'image') {
         return (
           <div key={field.key} className="flex gap-2 items-center">
@@ -755,15 +835,15 @@
               onClick={function() { openCloudinaryWidget(field.key); }}
               className="glass-btn px-3 py-2 rounded-xl text-sm font-medium"
               type="button"
-              title="T\u00E9l\u00E9charger une image"
+              title={TEXTS.uploadImage}
             >
-              \uD83D\uDCF7
+              📷
             </button>
             {val && (
               <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-slate-800/50 border border-white/10">
                 <img
                   src={val}
-                  alt="Aper\u00E7u"
+                  alt={TEXTS.preview}
                   className="w-full h-full object-cover"
                   onError={function(e) { e.target.style.display = 'none'; }}
                 />
@@ -772,7 +852,7 @@
           </div>
         );
       }
-      
+
       return (
         <input key={field.key} type={field.type || "text"} step={field.step} maxLength={field.maxLength} value={val} onChange={onChange} placeholder={field.label} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
       );
@@ -791,9 +871,9 @@
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
           <div className="glass max-w-md w-full p-6 rounded-2xl text-center">
-            <h2 className="text-xl font-bold text-red-400">Configuration requise</h2>
-            <p className="text-gray-300 mt-2">{isPlaceholder ? "Le template n'a pas \u00E9t\u00E9 configur\u00E9." : "Le vendeur n'a pas \u00E9t\u00E9 configur\u00E9 correctement."}</p>
-            <p className="text-sm text-gray-400 mt-2">Utilisez le forkeur pour cr\u00E9er une boutique.</p>
+            <h2 className="text-xl font-bold text-red-400">{TEXTS.configRequired}</h2>
+            <p className="text-gray-300 mt-2">{isPlaceholder ? TEXTS.templateNotConfigured : TEXTS.vendorIncorrect}</p>
+            <p className="text-sm text-gray-400 mt-2">{TEXTS.useForkeur}</p>
           </div>
         </div>
       );
@@ -809,23 +889,23 @@
         <header className="glass-header sticky top-0 z-30 px-4 py-3 rounded-xl">
           <div className="flex flex-wrap items-center justify-between">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl font-bold text-white">{settings.title || "Catalogue"}</h1>
+              <h1 className="text-xl font-bold text-white">{settings.title || TEXTS.shopTitle}</h1>
               {sogUser ? (
                 <span className="text-xs bg-emerald-900/40 text-emerald-200 px-2 py-1 rounded-full">
-                  Connect\u00E9 en tant que {sogUser.name}
+                  {TEXTS.connectedAs} {sogUser.name}
                 </span>
               ) : isReady ? (
                 <span className="text-xs bg-yellow-900/40 text-yellow-200 px-2 py-1 rounded-full">
-                  Invit\u00E9
+                  {TEXTS.invite}
                 </span>
               ) : null}
             </div>
             <div className="flex gap-2 items-center">
               <button onClick={handleAdminClick} className="glass-btn-secondary px-4 py-2 rounded-xl text-sm font-medium">
-                Admin
+                {TEXTS.admin}
               </button>
               <button onClick={function() { setShowCart(!showCart); }} className="glass-btn relative px-4 py-2 rounded-xl text-sm font-medium">
-                Panier
+                {TEXTS.cart}
                 {cartCount > 0 && (
                   <span className="cart-badge">{cartCount}</span>
                 )}
@@ -836,7 +916,7 @@
 
         {!sogUser && isReady && (
           <div className="mt-4 p-3 glass-alert bg-yellow-900/20 border-yellow-700/30 rounded-xl text-yellow-200 text-center">
-            Vous \u00EAtes en mode invit\u00E9. <a href="#" onClick={function(e) { e.preventDefault(); window.parent.postMessage({ type: 'SOG_LOGIN_REQUEST' }, '*'); }} className="underline hover:text-yellow-100">Connectez-vous</a> pour passer une commande.
+            {TEXTS.inviteMode} <a href="#" onClick={function(e) { e.preventDefault(); window.parent.postMessage({ type: 'SOG_LOGIN_REQUEST' }, '*'); }} className="underline hover:text-yellow-100">{TEXTS.connect}</a> {TEXTS.toOrder}
           </div>
         )}
 
@@ -850,44 +930,41 @@
 
           {isAdmin && isAdminAuthenticated ? (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white">PANEL ADMIN</h2>
+              <h2 className="text-2xl font-bold text-white">{TEXTS.adminPanel}</h2>
 
-              {/* ---- Configuration ---- */}
               <div className="glass-card p-6 rounded-2xl">
-                <h3 className="font-semibold text-white mb-3">Configuration</h3>
+                <h3 className="font-semibold text-white mb-3">{TEXTS.configTitle}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <input type="text" value={editableData?.settings?.title || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, title: e.target.value } }); }} placeholder="Titre" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                  <input type="text" value={editableData?.settings?.currency || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, currency: e.target.value } }); }} placeholder="Devise" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                  <input type="text" value={editableData?.settings?.ntfyTopic || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, ntfyTopic: e.target.value } }); }} placeholder="Topic ntfy" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                  <input type="text" value={editableData?.settings?.currency || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, currency: e.target.value } }); }} placeholder={TEXTS.configCurrency} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                  <input type="text" value={editableData?.settings?.ntfyTopic || ""} onChange={function(e) { setEditableData({ ...editableData, settings: { ...editableData.settings, ntfyTopic: e.target.value } }); }} placeholder={TEXTS.configTopic} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
                 </div>
               </div>
 
-              {/* ---- Token FGT ---- */}
               <div className="glass-card p-6 rounded-2xl">
-                <h3 className="font-semibold text-white mb-3">Token FGT (pour le commit)</h3>
+                <h3 className="font-semibold text-white mb-3">{TEXTS.fgtTitle}</h3>
                 <div className="flex gap-3 items-center">
                   <input
                     type="password"
                     value={fgtToken}
                     onChange={function(e) { setFgtToken(e.target.value); setIsTokenSaved(false); }}
-                    placeholder="Entrez votre token fine-grained"
+                    placeholder={TEXTS.fgtPlaceholder}
                     className="glass-input flex-1 px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
                   />
                   <button onClick={saveFgtToken} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">
-                    {isTokenSaved ? '✅ Sauvegarde' : '💾 Sauvegarder'}
+                    {isTokenSaved ? '✅ ' + TEXTS.save : '💾 ' + TEXTS.save}
                   </button>
                 </div>
                 {isTokenSaved && (
-                  <p className="text-xs text-emerald-400 mt-2">✅ Token sauvegard\u00E9 dans votre navigateur.</p>
+                  <p className="text-xs text-emerald-400 mt-2">✅ {TEXTS.fgtSaved}</p>
                 )}
-                <p className="text-xs text-gray-400 mt-1">Le token est stock\u00E9 localement dans votre navigateur.</p>
+                <p className="text-xs text-gray-400 mt-1">{TEXTS.fgtInfo}</p>
               </div>
 
-              {/* ---- Catégories ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-semibold text-white">{schema.categories.icon} {schema.categories.label}</h3>
-                  <button onClick={function() { openCatModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">Ajouter</button>
+                  <button onClick={function() { openCatModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">{TEXTS.addCategory}</button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(editableData?.categories || []).map(function(c) {
@@ -895,19 +972,18 @@
                       <div key={c.id} className={'flex items-center gap-2 p-2 rounded-xl bg-white/5 border ' + (hasPending(c, "category") ? 'border-yellow-700/50' : 'border-white/10')}>
                         <span className="text-xl">{c.icon}</span>
                         <span className="flex-1 text-sm truncate text-white">{c.name}</span>
-                        <button onClick={function() { openCatModal(c); }} className="text-gray-400 hover:text-white text-sm">Modifier</button>
-                        <button onClick={function() { deleteCategory(c.id); }} className="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                        <button onClick={function() { openCatModal(c); }} className="text-gray-400 hover:text-white text-sm">{TEXTS.modify}</button>
+                        <button onClick={function() { deleteCategory(c.id); }} className="text-red-400 hover:text-red-300 text-sm">{TEXTS.delete}</button>
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* ---- Produits ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-semibold text-white">{schema.products.icon} {schema.products.label}</h3>
-                  <button onClick={function() { openProdModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">Ajouter</button>
+                  <button onClick={function() { openProdModal(null); }} className="glass-btn px-4 py-2 rounded-xl text-sm font-medium">{TEXTS.addProduct}</button>
                 </div>
                 <div className="space-y-2">
                   {(editableData?.products || []).map(function(p) {
@@ -916,32 +992,31 @@
                         <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl" onError={function(e) { e.target.src = "https://via.placeholder.com/50"; }} />
                         <div className="flex-1">
                           <p className="text-sm font-medium text-white">{p.name}</p>
-                          <p className="text-xs text-gray-400">{p.price}{currency} · {getCategoryName(p.categoryId)} · stock:{p.stock}</p>
+                          <p className="text-xs text-gray-400">{p.price}{currency} · {getCategoryName(p.categoryId)} · {TEXTS.stockInfo}{p.stock}</p>
                         </div>
-                        <button onClick={function() { openProdModal(p); }} className="text-gray-400 hover:text-white text-sm">Modifier</button>
-                        <button onClick={function() { deleteProduct(p.id); }} className="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                        <button onClick={function() { openProdModal(p); }} className="text-gray-400 hover:text-white text-sm">{TEXTS.modify}</button>
+                        <button onClick={function() { deleteProduct(p.id); }} className="text-red-400 hover:text-red-300 text-sm">{TEXTS.delete}</button>
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* ---- Commit ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <button onClick={handleCommit} disabled={isCommitting} className={'glass-btn w-full py-3 rounded-xl font-semibold ' + (isCommitting ? 'opacity-50' : '')}>
-                  {isCommitting ? '⏳ Sauvegarde...' : '💾 Sauvegarder (Commit)'}
+                  {isCommitting ? '⏳ ' + TEXTS.saving : '💾 ' + TEXTS.commit}
                 </button>
               </div>
             </div>
           ) : (
             <div>
               <div className="mb-4">
-                <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder="Rechercher..." className="glass-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder={TEXTS.search} className="glass-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 outline-none" />
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4 overflow-x-auto pb-2">
                 <button onClick={function() { setSelectedCategoryId(null); }} className={'glass-category px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ' + (!selectedCategoryId ? 'active' : '')}>
-                  Tous
+                  {TEXTS.all}
                 </button>
                 {(editableData?.categories || []).map(function(c) {
                   return (
@@ -972,16 +1047,16 @@
                         <p className="text-base font-bold text-blue-400">{p.price}{currency}</p>
                         {settings.showStock && (
                           <p className={'text-xs ' + (isOutOfStock ? 'text-red-400' : 'text-gray-400')}>
-                            {isOutOfStock ? 'Rupture' : 'Stock: ' + p.stock}
+                            {isOutOfStock ? TEXTS.rupture : TEXTS.stockInfo + p.stock}
                           </p>
                         )}
                         {sogUser ? (
                           <button onClick={function() { addToCart(p); }} disabled={isOutOfStock} className={'glass-btn w-full mt-2 text-sm ' + (isOutOfStock ? 'opacity-50' : '')}>
-                            Ajouter au panier
+                            {isOutOfStock ? TEXTS.outOfStock : '🛒 ' + TEXTS.addToCart}
                           </button>
                         ) : (
                           <button disabled className="glass-btn-secondary w-full mt-2 text-sm opacity-50 cursor-not-allowed">
-                            Connexion requise
+                            {TEXTS.connectionRequired}
                           </button>
                         )}
                       </div>
@@ -992,14 +1067,14 @@
 
               {getFiltered().length === 0 && (
                 <div className="text-center py-10 text-gray-400">
-                  {searchQuery ? "Aucun produit ne correspond." : "Aucun produit dans cette cat\u00E9gorie."}
+                  {searchQuery ? TEXTS.noResult : TEXTS.emptyCategory}
                 </div>
               )}
 
               <div className="mt-8 text-center text-xs text-gray-500 border-t border-slate-800 pt-4">
-                {(data?.products || []).length} PRODUITS · {(data?.categories || []).length} CAT\u00C9GORIES
+                {(data?.products || []).length} {TEXTS.products} · {(data?.categories || []).length} {TEXTS.categories}
                 {settings.ntfyTopic && <span className="ml-4">🔔 {settings.ntfyTopic}</span>}
-                {sogUser && <span className="ml-4">✅ Connect\u00E9</span>}
+                {sogUser && <span className="ml-4">✅ {TEXTS.connected}</span>}
               </div>
             </div>
           )}
@@ -1010,12 +1085,12 @@
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
             <div className="glass-modal max-w-md w-full p-6 rounded-2xl shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
-              <h3 className="text-xl font-bold text-white mb-4">🔐 Acc\u00E8s admin</h3>
-              <p className="text-gray-300 text-sm mb-4">Entrez votre mot de passe.</p>
-              <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder="Mot de passe" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
+              <h3 className="text-xl font-bold text-white mb-4">🔐 {TEXTS.passwordModalTitle}</h3>
+              <p className="text-gray-300 text-sm mb-4">{TEXTS.passwordPlaceholder}</p>
+              <input type="password" value={adminPassword} onChange={function(e) { setAdminPassword(e.target.value); }} placeholder={TEXTS.passwordPlaceholder} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" onKeyDown={function(e) { if (e.key === "Enter") handleAdminLogin(); }} />
               <div className="flex gap-2 mt-4">
-                <button onClick={handleAdminLogin} className="glass-btn flex-1 py-2 rounded-xl font-medium">Valider</button>
-                <button onClick={function() { setShowPasswordModal(false); }} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">Annuler</button>
+                <button onClick={handleAdminLogin} className="glass-btn flex-1 py-2 rounded-xl font-medium">{TEXTS.validate}</button>
+                <button onClick={function() { setShowPasswordModal(false); }} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">{TEXTS.cancel}</button>
               </div>
               {msg.text && msg.type === "error" && <p className="text-red-400 text-sm mt-2">{msg.text}</p>}
             </div>
@@ -1035,11 +1110,11 @@
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowCart(false); }}>
             <div className="glass-modal max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
               <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold text-white mb-4">🛒 Mon Panier</h3>
+                <h3 className="text-xl font-bold text-white mb-4">🛒 {TEXTS.cartTitle}</h3>
                 <button className="text-gray-400 hover:text-white text-3xl leading-none" onClick={function() { setShowCart(false); }}>×</button>
               </div>
               {cart.length === 0 ? (
-                <p className="py-4 text-center text-gray-400">Panier vide</p>
+                <p className="py-4 text-center text-gray-400">{TEXTS.cartEmpty}</p>
               ) : (
                 <div>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -1051,36 +1126,36 @@
                             <p className="text-xs text-gray-400">{i.price}{currency}</p>
                           </div>
                           <div className="flex items-center gap-1">
-                            <button onClick={function() { updateQty(i.id, -1); }} className="glass-btn-secondary text-xs px-2 py-1">-</button>
+                            <button onClick={function() { updateQty(i.id, -1); }} className="glass-btn-secondary text-xs px-2 py-1">−</button>
                             <span className="w-6 text-center text-white">{i.quantity}</span>
                             <button onClick={function() { updateQty(i.id, 1); }} className="glass-btn-secondary text-xs px-2 py-1">+</button>
-                            <button onClick={function() { removeFromCart(i.id); }} className="text-red-400 hover:text-red-300 text-sm ml-1">×</button>
+                            <button onClick={function() { removeFromCart(i.id); }} className="text-red-400 hover:text-red-300 text-sm ml-1">✕</button>
                           </div>
                         </div>
                       );
                     })}
                   </div>
                   <div className="flex justify-between font-bold border-t border-white/10 pt-2 mt-2">
-                    <span className="text-white">Total</span>
+                    <span className="text-white">{TEXTS.total}</span>
                     <span className="text-blue-400">{getTotal()}{currency}</span>
                   </div>
 
                   <div className={'space-y-2 mt-4 ' + (!sogUser ? 'opacity-50 pointer-events-none' : '')}>
-                    <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder="Nom complet *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                    <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder="Adresse *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder="T\u00E9l\u00E9phone *" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
-                    <textarea value={order.comments} onChange={function(e) { setOrder({ ...order, comments: e.target.value }); }} placeholder="Commentaires (facultatif)" rows="2" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none resize-y" />
+                    <input type="text" value={order.name} onChange={function(e) { setOrder({ ...order, name: e.target.value }); }} placeholder={TEXTS.namePlaceholder} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                    <input type="text" value={order.address} onChange={function(e) { setOrder({ ...order, address: e.target.value }); }} placeholder={TEXTS.addressPlaceholder} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                    <input type="tel" value={order.phone} onChange={function(e) { setOrder({ ...order, phone: e.target.value }); }} placeholder={TEXTS.phonePlaceholder} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" />
+                    <textarea value={order.comments} onChange={function(e) { setOrder({ ...order, comments: e.target.value }); }} placeholder={TEXTS.commentsPlaceholder} rows="2" className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none resize-y" />
                   </div>
 
                   {!sogUser && (
                     <div className="mt-2 text-yellow-400 text-sm text-center">
-                      🔒 Connectez-vous \u00E0 SOG pour valider la commande
+                      🔒 {TEXTS.loginRequired}
                     </div>
                   )}
 
                   <div className="modal-action mt-4">
                     <button onClick={checkout} disabled={!sogUser || cart.length === 0} className={'glass-btn w-full py-3 rounded-xl font-semibold ' + (!sogUser || cart.length === 0 ? 'opacity-50' : '')}>
-                      ✅ Valider la commande
+                      ✅ {TEXTS.validateOrder}
                     </button>
                   </div>
                 </div>
@@ -1093,7 +1168,7 @@
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={closeModal}>
             <div className="glass-modal max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
               <h3 className="text-xl font-bold text-white mb-4">
-                {modal.creating ? "✨ Nouveau " + (modal.type === "category" ? "cat\u00E9gorie" : "produit") : "✏️ Modifier " + (modal.type === "category" ? "la cat\u00E9gorie" : "le produit")}
+                {modal.creating ? '✨ ' + (modal.type === "category" ? TEXTS.newCategory : TEXTS.newProduct) : '✏️ ' + (modal.type === "category" ? TEXTS.editCategoryTitle : TEXTS.editProductTitle)}
               </h3>
               <div className="space-y-3">
                 {modal.type === "category"
@@ -1106,9 +1181,9 @@
               </div>
               <div className="flex gap-2 mt-4">
                 <button onClick={modal.type === "category" ? saveCategory : saveProduct} className="glass-btn flex-1 py-2 rounded-xl font-medium">
-                  {modal.creating ? '✅ Cr\u00E9er' : '💾 Sauvegarder'}
+                  {modal.creating ? '✅ ' + TEXTS.create : '💾 ' + TEXTS.save}
                 </button>
-                <button onClick={closeModal} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">Annuler</button>
+                <button onClick={closeModal} className="glass-btn-secondary flex-1 py-2 rounded-xl font-medium">{TEXTS.cancel}</button>
               </div>
             </div>
           </div>
