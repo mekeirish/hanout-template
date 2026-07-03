@@ -162,7 +162,7 @@
     }
   };
 
-  // ---- TEXTES EN ENTITÉS HTML (sans aucun emoji) ----
+  // ---- TOUS LES TEXTES EN ENTITÉS HTML (immunisés contre l'UTF-8) ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
@@ -288,7 +288,7 @@
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
 
-    // ---- SCHÉMA SANS AUCUNE RÉFÉRENCE À UNE ICÔNE ----
+    // Schéma sans icône
     var schema = {
       categories: {
         label: TEXTS.categories,
@@ -554,15 +554,12 @@
       setMsg({ text: TEXTS.categoryDeleted, type: "info" });
     };
 
-    // ---- OUVERTURE MODAL PRODUIT (CORRIGÉE) ----
     var openProdModal = function(prod) {
       if (prod === undefined) prod = null;
       setModal({ open: true, type: "product", item: prod, creating: !prod });
       var defaultVals = {};
       schema.products.fields.forEach(function(f) {
         if (f.key === "categoryId") {
-          // Si on modifie un produit, on prend sa catégorie
-          // Sinon, on utilise la catégorie filtrée si elle existe, sinon la première catégorie
           var defaultCat = prod?.[f.key];
           if (!defaultCat && editableData.categories.length > 0) {
             defaultCat = selectedCategoryId || editableData.categories[0].id;
@@ -575,9 +572,7 @@
       setFormData(defaultVals);
     };
 
-    // ---- SAUVEGARDE PRODUIT (CORRIGÉE) ----
     var saveProduct = function() {
-      // Vérifier qu'une catégorie est sélectionnée
       var catId = formData.categoryId;
       if (!catId || catId === "") {
         if (editableData.categories.length > 0) {
@@ -587,7 +582,6 @@
           return;
         }
       }
-      // S'assurer que c'est un nombre
       catId = Number(catId);
 
       var maxId = 0;
@@ -766,7 +760,6 @@
       setModal({ open: false, type: "", item: null, creating: false });
     };
 
-    // ---- RENDER FIELD (avec select sans option vide) ----
     var renderField = function(field) {
       var val = formData[field.key] || "";
       var onChange = function(e) {
@@ -776,7 +769,7 @@
       if (field.type === "select") {
         var options = field.options === "categories" ? (editableData?.categories || []) : [];
         if (options.length === 0) {
-          return <p className="text-yellow-400 text-sm">Aucune catégorie disponible. Créez-en une d'abord.</p>;
+          return <p className="text-yellow-400 text-sm">Aucune catégorie disponible.</p>;
         }
         return (
           <select key={field.key} value={val} onChange={onChange} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" required>
@@ -912,7 +905,6 @@
                 <p className="text-xs text-gray-400 mt-1">{decodeEntities(TEXTS.fgtInfo)}</p>
               </div>
 
-              {/* ---- LISTE DES CATÉGORIES ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.categories)}</h3>
@@ -942,7 +934,6 @@
                 </div>
               </div>
 
-              {/* ---- LISTE DES PRODUITS (avec affichage de la catégorie) ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.products)}</h3>
@@ -983,7 +974,6 @@
               </div>
             </div>
           ) : (
-            // ---- PARTIE PUBLIQUE (inchangée) ----
             <div>
               <div className="mb-4">
                 <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder={decodeEntities(TEXTS.search)} className="glass-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 outline-none" />
@@ -1056,7 +1046,6 @@
         </div>
 
         {/* ---- MODALS ---- */}
-
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
             <div className="glass-modal max-w-md w-full p-6 rounded-2xl shadow-2xl" onClick={function(e) { e.stopPropagation(); }}>
