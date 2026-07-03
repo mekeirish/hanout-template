@@ -5,17 +5,13 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>Hanout - Catalogue</title>
-  <!-- Tailwind CSS (Play CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React + ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Cloudinary Widget -->
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 
   <style>
-    /* ---------- GLASSMORPHISM BASE ---------- */
     .glass {
       background: rgba(30, 41, 59, 0.4);
       backdrop-filter: blur(16px);
@@ -87,19 +83,6 @@
       border-color: rgba(255, 255, 255, 0.15);
       transform: translateY(-1px);
     }
-    .glass-btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      transition: all 0.2s ease;
-    }
-    .glass-btn-danger:hover:not(:disabled) {
-      background: rgba(239, 68, 68, 0.3);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #fecaca;
-    }
     .glass-category {
       background: rgba(30, 41, 59, 0.3);
       backdrop-filter: blur(8px);
@@ -118,22 +101,6 @@
       background: rgba(30, 41, 59, 0.5);
       border-color: rgba(255, 255, 255, 0.15);
     }
-    .cart-badge-glass {
-      background: rgba(239, 68, 68, 0.8);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    }
-    .glass-alert {
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .modal-overlay {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-    }
     .cart-badge {
       position: absolute;
       top: -6px;
@@ -145,6 +112,15 @@
       padding: 0.1rem 0.4rem;
       min-width: 1.2rem;
       text-align: center;
+    }
+    .modal-overlay {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+    .glass-alert {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
@@ -167,17 +143,14 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <link rel="apple-touch-icon" href="icon.png" />
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4b6cb7">
-<link rel="apple-touch-icon" href="icon.png"></head>
+</head>
 <body>
 <div id="root"></div>
 
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
 
-  // ---- DÉCODE LES ENTITÉS HTML ----
+  // Décodage des entités HTML
   var decodeEntities = function(str) {
     if (!str) return "";
     try {
@@ -189,114 +162,111 @@
     }
   };
 
-  // ---- TEXTES STATIQUES SANS EMOJI ----
+  // ---- TOUS LES TEXTES EN ENTITÉS HTML (pour échapper l'UTF-8) ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
     cartEmpty: "Panier vide",
     total: "Total",
     validateOrder: "Valider la commande",
-    inviteMode: "Vous êtes en mode invité.",
+    inviteMode: "Vous &ecirc;tes en mode invit&eacute;.",
     connect: "Connectez-vous",
     toOrder: "pour passer une commande.",
     search: "Rechercher...",
     all: "Tous",
     noResult: "Aucun produit ne correspond.",
-    emptyCategory: "Aucun produit dans cette catégorie.",
+    emptyCategory: "Aucun produit dans cette cat&eacute;gorie.",
     products: "PRODUITS",
-    categories: "CATEGORIES",
-    connected: "Connecté",
+    categories: "CAT&Eacute;GORIES",
+    connected: "Connect&eacute;",
     adminPanel: "PANEL ADMIN",
     configTitle: "Configuration",
     configCurrency: "Devise",
     configTopic: "Topic ntfy",
     fgtTitle: "Token FGT (pour le commit)",
     fgtPlaceholder: "Entrez votre token fine-grained",
-    fgtSaved: "Token sauvegardé dans votre navigateur.",
-    fgtInfo: "Le token est stocké localement dans votre navigateur.",
+    fgtSaved: "Token sauvegard&eacute; dans votre navigateur.",
+    fgtInfo: "Le token est stock&eacute; localement dans votre navigateur.",
     addCategory: "Ajouter",
     modify: "Modifier",
     delete: "Supprimer",
     addProduct: "Ajouter",
     commit: "Sauvegarder (Commit)",
     saving: "Sauvegarde...",
-    saveSuccess: "Données sauvegardées sur GitHub",
-    saveFail: "Échec : ",
-    passwordModalTitle: "Accès admin",
+    saveSuccess: "Donn&eacute;es sauvegard&eacute;es sur GitHub",
+    saveFail: "&Eacute;chec : ",
+    passwordModalTitle: "Acc&egrave;s admin",
     passwordPlaceholder: "Mot de passe",
     validate: "Valider",
     cancel: "Annuler",
-    loginRequired: "Connectez-vous à SOG pour valider la commande",
+    loginRequired: "Connectez-vous &agrave; SOG pour valider la commande",
     namePlaceholder: "Nom complet *",
     addressPlaceholder: "Adresse *",
-    phonePlaceholder: "Téléphone *",
+    phonePlaceholder: "T&eacute;l&eacute;phone *",
     commentsPlaceholder: "Commentaires (facultatif)",
-    addCategoryTitle: "Nouvelle catégorie",
-    editCategoryTitle: "Modifier la catégorie",
+    addCategoryTitle: "Nouvelle cat&eacute;gorie",
+    editCategoryTitle: "Modifier la cat&eacute;gorie",
     addProductTitle: "Nouveau produit",
     editProductTitle: "Modifier le produit",
-    create: "Créer",
+    create: "Cr&eacute;er",
     save: "Sauvegarder",
     choose: "Choisir...",
-    iconLabel: "Icône",
+    iconLabel: "Ic&ocirc;ne",
     nameLabel: "Nom",
     priceLabel: "Prix",
     imageLabel: "URL image",
-    categoryLabel: "Catégorie",
+    categoryLabel: "Cat&eacute;gorie",
     stockLabel: "Stock",
-    uploadImage: "Télécharger une image",
-    preview: "Aperçu",
+    uploadImage: "T&eacute;l&eacute;charger une image",
+    preview: "Aper&ccedil;u",
     cartTitle: "Mon Panier",
     addToCart: "Ajouter au panier",
     outOfStock: "Rupture",
     connectionRequired: "Connexion requise",
     configRequired: "Configuration requise",
-    templateNotConfigured: "Le template n'a pas été configuré.",
-    vendorIncorrect: "Le vendeur n'a pas été configuré correctement.",
-    useForkeur: "Utilisez le forkeur pour créer une boutique.",
-    connectedAs: "Connecté en tant que",
-    invite: "Invité",
+    templateNotConfigured: "Le template n'a pas &eacute;t&eacute; configur&eacute;.",
+    vendorIncorrect: "Le vendeur n'a pas &eacute;t&eacute; configur&eacute; correctement.",
+    useForkeur: "Utilisez le forkeur pour cr&eacute;er une boutique.",
+    connectedAs: "Connect&eacute; en tant que",
+    invite: "Invit&eacute;",
     shopTitle: "Catalogue",
-    newCategory: "Nouvelle catégorie",
+    newCategory: "Nouvelle cat&eacute;gorie",
     newProduct: "Nouveau produit",
-    imageUploaded: "Image téléchargée avec succès !",
+    imageUploaded: "Image t&eacute;l&eacute;charg&eacute;e avec succ&egrave;s !",
     imageError: "Erreur lors de l'upload de l'image.",
-    tokenSaved: "Token FGT sauvegardé avec succès !",
+    tokenSaved: "Token FGT sauvegard&eacute; avec succ&egrave;s !",
     tokenInvalid: "Veuillez entrer un token valide.",
-    accessGranted: "Accès admin autorisé",
+    accessGranted: "Acc&egrave;s admin autoris&eacute;",
     passwordIncorrect: "Mot de passe incorrect",
-    categorySaved: "Catégorie sauvegardée",
-    categoryDeleted: "Catégorie supprimée",
-    productSaved: "Produit sauvegardé",
-    productDeleted: "Produit supprimé",
-    categoryConfirmDelete: "Supprimer cette catégorie ?",
+    categorySaved: "Cat&eacute;gorie sauvegard&eacute;e",
+    categoryDeleted: "Cat&eacute;gorie supprim&eacute;e",
+    productSaved: "Produit sauvegard&eacute;",
+    productDeleted: "Produit supprim&eacute;",
+    categoryConfirmDelete: "Supprimer cette cat&eacute;gorie ?",
     productConfirmDelete: "Supprimer ce produit ?",
     stockInfo: "Stock: ",
     rupture: "Rupture",
-    orderRecap: "RÉCAPITULATIF",
+    orderRecap: "R&Eacute;CAPITULATIF",
     client: "Client",
     address: "Adresse",
-    phone: "Tél",
+    phone: "T&eacute;l",
     comment: "Remarque",
     none: "Aucun",
-    items: "Articles commandés",
+    items: "Articles command&eacute;s",
     totalLabel: "TOTAL",
     newOrder: "NOUVELLE COMMANDE"
   };
 
   function App() {
-    // ---- CONSTANTES INJECTÉES PAR LE FORKEUR ----
     var VENDOR = "{{VENDOR}}";
     var PASSWORD_HASH = "{{PASSWORD_HASH}}";
     var isPlaceholder = VENDOR.startsWith("{{");
 
-    // ---- DÉDUCTION AUTOMATIQUE ----
     var params = new URLSearchParams(window.location.search);
     var repoName = window.location.pathname.split('/')[1] || '';
     var deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
     var vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name") || VENDOR;
 
-    // ---- ÉTATS ----
     var [sogUser, setSogUser] = useState(null);
     var [isReady, setIsReady] = useState(false);
     var [fgtToken, setFgtToken] = useState('');
@@ -319,7 +289,7 @@
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
 
-    // ---- SCHÉMA (sans icônes emoji) ----
+    // Schéma sans icônes
     var schema = {
       categories: {
         label: TEXTS.categories,
@@ -342,24 +312,13 @@
       }
     };
 
-    // ---- ENCODAGE UTF-8 & BASE64 ROBUSTES ----
     var utf8ToBase64 = function(str) {
-      try {
-        return btoa(unescape(encodeURIComponent(str)));
-      } catch (e) {
-        return btoa(str);
-      }
+      try { return btoa(unescape(encodeURIComponent(str))); } catch(e) { return btoa(str); }
     };
     var base64ToUtf8 = function(str) {
-      try {
-        return decodeURIComponent(escape(atob(str.replace(/\s/g, ''))));
-      } catch (e) {
-        console.error("Erreur de décodage base64:", e);
-        return "";
-      }
+      try { return decodeURIComponent(escape(atob(str.replace(/\s/g, '')))); } catch(e) { return ""; }
     };
 
-    // ---- DECODE DES DONNÉES UTILISATEUR SOG ----
     var cleanSogUser = function(user) {
       if (!user) return null;
       var cleaned = { ...user };
@@ -371,7 +330,6 @@
       return cleaned;
     };
 
-    // ---- CLOUDINARY WIDGET ----
     var openCloudinaryWidget = function(fieldKey) {
       if (!window.cloudinary) {
         alert(decodeEntities(TEXTS.imageError));
@@ -422,7 +380,6 @@
       widget.open();
     };
 
-    // ---- ÉCOUTE SOG ----
     useEffect(function() {
       var handleMessage = function(event) {
         if (event.data.type === 'SOG_AUTH') {
@@ -438,7 +395,6 @@
       };
     }, []);
 
-    // ---- CHARGEMENT FGT ----
     useEffect(function() {
       var stored = localStorage.getItem('fgt_token_' + repoName);
       if (stored) {
@@ -447,7 +403,6 @@
       }
     }, []);
 
-    // ---- TOKEN FGT ----
     var MASTER_TOKEN = null;
     function getToken() {
       if (MASTER_TOKEN) return MASTER_TOKEN;
@@ -479,7 +434,6 @@
       }
     };
 
-    // ---- CHARGEMENT DONNÉES ----
     useEffect(function() {
       var load = async function() {
         if (!vendeur || isPlaceholder) { setIsLoading(false); return; }
@@ -513,7 +467,6 @@
       load();
     }, []);
 
-    // ---- SAUVEGARDE ----
     var saveFile = async function(content) {
       var token = getToken();
       if (!token) throw new Error("Token requis.");
@@ -540,7 +493,6 @@
       setData(editableData);
     };
 
-    // ---- AUTH ADMIN ----
     var sha256 = async function(message) {
       var msgBuffer = new TextEncoder().encode(message);
       var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -568,7 +520,6 @@
       }
     };
 
-    // ---- CRUD CATÉGORIES ----
     var openCatModal = function(cat) {
       if (cat === undefined) cat = null;
       setModal({ open: true, type: "category", item: cat, creating: !cat });
@@ -582,9 +533,7 @@
     var saveCategory = function() {
       var maxId = 0;
       editableData.categories.forEach(function(c) { if (c.id > maxId) maxId = c.id; });
-      var newCat = {
-        id: modal.creating ? maxId + 1 : modal.item.id
-      };
+      var newCat = { id: modal.creating ? maxId + 1 : modal.item.id };
       schema.categories.fields.forEach(function(f) {
         newCat[f.key] = formData[f.key] || f.default;
       });
@@ -609,7 +558,6 @@
       setMsg({ text: TEXTS.categoryDeleted, type: "info" });
     };
 
-    // ---- CRUD PRODUITS ----
     var openProdModal = function(prod) {
       if (prod === undefined) prod = null;
       setModal({ open: true, type: "product", item: prod, creating: !prod });
@@ -631,9 +579,7 @@
       }
       var maxId = 0;
       editableData.products.forEach(function(p) { if (p.id > maxId) maxId = p.id; });
-      var newProd = {
-        id: modal.creating ? maxId + 1 : modal.item.id
-      };
+      var newProd = { id: modal.creating ? maxId + 1 : modal.item.id };
       schema.products.fields.forEach(function(f) {
         var val = formData[f.key] !== undefined ? formData[f.key] : f.default;
         newProd[f.key] = f.type === "number" ? parseFloat(val) || 0 : val;
@@ -655,7 +601,6 @@
       setMsg({ text: TEXTS.productDeleted, type: "info" });
     };
 
-    // ---- COMMIT ----
     var handleCommit = async function() {
       setIsCommitting(true);
       try {
@@ -667,7 +612,6 @@
       setIsCommitting(false);
     };
 
-    // ---- PANIER ----
     var addToCart = function(product) {
       if (product.stock <= 0) { alert(decodeEntities(TEXTS.outOfStock)); return; }
       if (!sogUser) {
@@ -711,7 +655,6 @@
       }, 0).toFixed(2);
     };
 
-    // ---- ENVOI COMMANDE À SOG ----
     var sendOrderToSOG = function(orderData) {
       window.parent.postMessage({
         type: 'SOG_ORDER',
@@ -730,7 +673,6 @@
       }, '*');
     };
 
-    // ---- CHECKOUT ----
     var checkout = async function() {
       if (cart.length === 0) { alert(decodeEntities(TEXTS.cartEmpty)); return; }
       if (!sogUser) {
@@ -774,16 +716,12 @@
       alert("Commande validée !");
     };
 
-    // ---- UTILITAIRES ----
     var getCategoryName = function(id) {
       var cat = data?.categories?.find(function(c) { return c.id === id; });
       return cat ? cat.name : "Sans catégorie";
     };
 
-    var getCategoryIcon = function(id) {
-      // Retourne une chaîne vide (plus d'emoji)
-      return "";
-    };
+    var getCategoryIcon = function(id) { return ""; };
 
     var hasPending = function(item, type) {
       if (!data) return false;
@@ -811,7 +749,6 @@
       setModal({ open: false, type: "", item: null, creating: false });
     };
 
-    // ---- RENDER FIELD ----
     var renderField = function(field) {
       var val = formData[field.key] || "";
       var onChange = function(e) {
@@ -1199,7 +1136,5 @@
     });
   }
 </script>
-
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
 </body>
 </html>
