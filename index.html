@@ -184,26 +184,26 @@
 
   function App() {
 
-    // ---- CONSTANTES INJECTEES PAR LE FORKEUR ----
+    // ---- CONSTANTES INJECTÉES PAR LE FORKEUR ----
     var VENDOR = "{{VENDOR}}";
     var PASSWORD_HASH = "{{PASSWORD_HASH}}";
     var isPlaceholder = VENDOR.startsWith("{{");
 
-    // ---- DEDUCTION AUTOMATIQUE ----
+    // ---- DÉDUCTION AUTOMATIQUE ----
     var params = new URLSearchParams(window.location.search);
     var repoName = window.location.pathname.split('/')[1] || '';
     var deducedVendor = repoName.startsWith('hanout-') ? repoName.replace('hanout-', '') : null;
     var vendeur = params.get("vendeur") || deducedVendor || localStorage.getItem("vendeur_name") || VENDOR;
 
-    // ---- ETAT POUR L'UTILISATEUR SOG ----
+    // ---- ÉTAT POUR L'UTILISATEUR SOG ----
     var [sogUser, setSogUser] = useState(null);
     var [isReady, setIsReady] = useState(false);
 
-    // ---- ETAT POUR LE TOKEN FGT ----
+    // ---- ÉTAT POUR LE TOKEN FGT ----
     var [fgtToken, setFgtToken] = useState('');
     var [isTokenSaved, setIsTokenSaved] = useState(false);
 
-    // ---- ECOUTE DES MESSAGES DE SOG ----
+    // ---- ÉCOUTE DES MESSAGES DE SOG ----
     useEffect(function() {
       var handleMessage = function(event) {
         if (event.data.type === 'SOG_AUTH') {
@@ -262,7 +262,7 @@
       }
     };
 
-    // ---- ETATS ----
+    // ---- ÉTATS ----
     var [isLoading, setIsLoading] = useState(true);
     var [data, setData] = useState(null);
     var [editableData, setEditableData] = useState(null);
@@ -281,7 +281,7 @@
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
 
-    // ---- SCHEMA ----
+    // ---- SCHÉMA ----
     var schema = {
       categories: {
         label: "Catégories",
@@ -315,7 +315,7 @@
       }
     };
 
-    // ---- DECODAGE UTF-8 POUR atob ----
+    // ---- DÉCODAGE UTF-8 POUR atob ----
     var base64ToUtf8 = function(str) {
       try {
         var binaryString = atob(str);
@@ -473,7 +473,7 @@
       }
     };
 
-    // ---- CRUD CATEGORIES ----
+    // ---- CRUD CATÉGORIES ----
     var openCatModal = function(cat) {
       if (cat === undefined) cat = null;
       setModal({ open: true, type: "category", item: cat, creating: !cat });
@@ -616,7 +616,7 @@
       }, 0).toFixed(2);
     };
 
-    // ---- ENVOI DE LA COMMANDE A SOG ----
+    // ---- ENVOI DE LA COMMANDE À SOG ----
     var sendOrderToSOG = function(orderData) {
       window.parent.postMessage({
         type: 'SOG_ORDER',
@@ -883,7 +883,7 @@
                 <p className="text-xs text-gray-400 mt-1">Le token est stocké localement dans votre navigateur.</p>
               </div>
 
-              {/* ---- Categories ---- */}
+              {/* ---- Catégories ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="font-semibold text-white">{schema.categories.icon} {schema.categories.label}</h3>
