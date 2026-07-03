@@ -554,14 +554,20 @@
       setMsg({ text: TEXTS.categoryDeleted, type: "info" });
     };
 
+    // ---- OUVERTURE MODAL PRODUIT (CORRIGÉE) ----
     var openProdModal = function(prod) {
       if (prod === undefined) prod = null;
       setModal({ open: true, type: "product", item: prod, creating: !prod });
       var defaultVals = {};
       schema.products.fields.forEach(function(f) {
         if (f.key === "categoryId") {
-          var defaultCategory = selectedCategoryId || (editableData.categories[0] ? editableData.categories[0].id : "");
-          defaultVals[f.key] = prod?.[f.key] || defaultCategory || f.default || "";
+          // Si on modifie un produit, on prend sa catégorie
+          // Sinon, on utilise la catégorie filtrée si elle existe, sinon la première catégorie
+          var defaultCat = prod?.[f.key];
+          if (!defaultCat && editableData.categories.length > 0) {
+            defaultCat = selectedCategoryId || editableData.categories[0].id;
+          }
+          defaultVals[f.key] = defaultCat || "";
         } else {
           defaultVals[f.key] = prod?.[f.key] || f.default || "";
         }
@@ -569,16 +575,33 @@
       setFormData(defaultVals);
     };
 
+    // ---- SAUVEGARDE PRODUIT (CORRIGÉE) ----
     var saveProduct = function() {
-      if (!formData.categoryId && editableData.categories.length > 0) {
-        formData.categoryId = editableData.categories[0].id;
+      // Vérifier qu'une catégorie est sélectionnée
+      var catId = formData.categoryId;
+      if (!catId || catId === "") {
+        if (editableData.categories.length > 0) {
+          catId = editableData.categories[0].id;
+        } else {
+          alert("Veuillez créer une catégorie avant d'ajouter un produit.");
+          return;
+        }
       }
+      // S'assurer que c'est un nombre
+      catId = Number(catId);
+
       var maxId = 0;
       editableData.products.forEach(function(p) { if (p.id > maxId) maxId = p.id; });
       var newProd = { id: modal.creating ? maxId + 1 : modal.item.id };
       schema.products.fields.forEach(function(f) {
         var val = formData[f.key] !== undefined ? formData[f.key] : f.default;
-        newProd[f.key] = f.type === "number" ? parseFloat(val) || 0 : val;
+        if (f.key === "categoryId") {
+          newProd[f.key] = catId;
+        } else if (f.type === "number") {
+          newProd[f.key] = parseFloat(val) || 0;
+        } else {
+          newProd[f.key] = val;
+        }
       });
       if (modal.creating) {
         editableData.products.push(newProd);
@@ -743,6 +766,7 @@
       setModal({ open: false, type: "", item: null, creating: false });
     };
 
+    // ---- RENDER FIELD (avec select sans option vide) ----
     var renderField = function(field) {
       var val = formData[field.key] || "";
       var onChange = function(e) {
@@ -751,9 +775,11 @@
 
       if (field.type === "select") {
         var options = field.options === "categories" ? (editableData?.categories || []) : [];
+        if (options.length === 0) {
+          return <p className="text-yellow-400 text-sm">Aucune catégorie disponible. Créez-en une d'abord.</p>;
+        }
         return (
-          <select key={field.key} value={val} onChange={onChange} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none">
-            <option value="">{decodeEntities(TEXTS.choose)}</option>
+          <select key={field.key} value={val} onChange={onChange} className="glass-input w-full px-4 py-2 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none" required>
             {options.map(function(opt) {
               return <option key={opt.id} value={opt.id}>{decodeEntities(opt.name)}</option>;
             })}
@@ -886,7 +912,7 @@
                 <p className="text-xs text-gray-400 mt-1">{decodeEntities(TEXTS.fgtInfo)}</p>
               </div>
 
-              {/* ---- LISTE DES CATÉGORIES (améliorée) ---- */}
+              {/* ---- LISTE DES CATÉGORIES ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.categories)}</h3>
@@ -916,7 +942,7 @@
                 </div>
               </div>
 
-              {/* ---- LISTE DES PRODUITS (améliorée) ---- */}
+              {/* ---- LISTE DES PRODUITS (avec affichage de la catégorie) ---- */}
               <div className="glass-card p-6 rounded-2xl">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold text-white text-lg">{decodeEntities(TEXTS.products)}</h3>
@@ -1029,7 +1055,7 @@
           )}
         </div>
 
-        {/* ---- MODALS (inchangées) ---- */}
+        {/* ---- MODALS ---- */}
 
         {showPasswordModal && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50 p-4 modal-animate" onClick={function() { setShowPasswordModal(false); }}>
