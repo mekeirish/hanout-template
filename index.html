@@ -442,6 +442,7 @@
         if (event.data.type === 'SOG_AUTH') {
           var cleaned = cleanSogUser(event.data.payload.user);
           setSogUser(cleaned);
+          console.log('✅ Utilisateur SOG reçu:', cleaned);
         }
       };
       window.addEventListener('message', handleMessage);
@@ -762,7 +763,7 @@
       }, '*');
     };
 
-    // ---- CHECKOUT (avec enregistrement direct dans Firebase + notification SOG) ----
+    // ---- CHECKOUT (avec enregistrement direct dans Firebase + customerEmail) ----
     var checkout = async function() {
       if (cart.length === 0) { alert(decodeEntities(TEXTS.cartEmpty)); return; }
       if (!sogUser) {
@@ -774,10 +775,13 @@
         return;
       }
 
+      console.log('📦 Passage de commande pour', sogUser.email, '(UID:', sogUser.uid, ')');
+
       // ---- ENREGISTREMENT DIRECT DANS FIREBASE ----
       try {
-        await db.ref('orders').push({
+        var orderData = {
           userId: sogUser.uid,
+          customerEmail: sogUser.email,
           vendor: vendeur,
           items: cart.map(function(i) { return { name: i.name, quantity: i.quantity, price: i.price }; }),
           total: parseFloat(getTotal()),
@@ -788,15 +792,17 @@
           customerPhone: order.phone,
           customerAddress: order.address,
           comments: order.comments || ""
-        });
+        };
+        console.log('📝 Commande à enregistrer:', orderData);
+        await db.ref('orders').push(orderData);
         console.log('✅ Commande enregistrée dans Firebase');
 
         // ---- ENVOI À SOG POUR REAFFICHAGE DE L'HISTORIQUE CLIENT ----
         window.parent.postMessage({
           type: 'SOG_ORDER_SAVED',
-          payload: { userId: sogUser.uid }
+          payload: { userId: sogUser.uid, email: sogUser.email }
         }, '*');
-        console.log('📤 Notification envoyée à SOG pour recharger l\'historique client');
+        console.log('📤 Notification SOG_ORDER_SAVED envoyée');
 
       } catch (err) {
         console.error('❌ Erreur Firebase:', err);
