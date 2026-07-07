@@ -762,7 +762,7 @@
       }, '*');
     };
 
-    // ---- CHECKOUT (avec enregistrement direct dans Firebase) ----
+    // ---- CHECKOUT (avec enregistrement direct dans Firebase + notification SOG) ----
     var checkout = async function() {
       if (cart.length === 0) { alert(decodeEntities(TEXTS.cartEmpty)); return; }
       if (!sogUser) {
@@ -790,6 +790,14 @@
           comments: order.comments || ""
         });
         console.log('✅ Commande enregistrée dans Firebase');
+
+        // ---- ENVOI À SOG POUR REAFFICHAGE DE L'HISTORIQUE CLIENT ----
+        window.parent.postMessage({
+          type: 'SOG_ORDER_SAVED',
+          payload: { userId: sogUser.uid }
+        }, '*');
+        console.log('📤 Notification envoyée à SOG pour recharger l\'historique client');
+
       } catch (err) {
         console.error('❌ Erreur Firebase:', err);
         alert('Erreur lors de l\'enregistrement de la commande.');
