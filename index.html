@@ -4,9 +4,20 @@
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Hanout - Catalogue</title>
+  <title>{{VENDOR}} - Catalogue</title>
+  
+  <!-- Métadonnées dynamiques -->
+  <meta name="description" content="Boutique {{VENDOR}} - Commandez en ligne" />
+  <meta property="og:title" content="{{VENDOR}} - Catalogue" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mekeirish.github.io/hanout-{{VENDOR}}/" />
+  <meta property="og:description" content="Boutique {{VENDOR}} - Commandez en ligne" />
+  <meta name="theme-color" content="#0f172a" />
+  
+  <!-- Pas de favicon par défaut (tu peux en ajouter un générique) -->
+  <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>" /> -->
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -16,35 +27,134 @@
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 
   <style>
-    /* (les styles restent identiques) */
-    .glass { background: rgba(30,41,59,0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-    .glass-card { background: rgba(30,41,59,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: all 0.3s ease; }
-    .glass-card:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 12px 40px rgba(0,0,0,0.6); transform: translateY(-2px); }
-    .glass-header { background: rgba(15,23,42,0.6); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .glass-modal { background: rgba(15,23,42,0.8); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 24px 48px rgba(0,0,0,0.6); }
-    .glass-input { background: rgba(15,23,42,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); transition: border-color 0.2s, box-shadow 0.2s; }
-    .glass-input:focus { border-color: rgba(59,130,246,0.5); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
-    .glass-btn { background: rgba(59,130,246,0.25); backdrop-filter: blur(8px); border: 1px solid rgba(59,130,246,0.3); color: #f1f5f9; transition: all 0.2s ease; }
-    .glass-btn:hover:not(:disabled) { background: rgba(59,130,246,0.4); border-color: rgba(59,130,246,0.5); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.2); }
-    .glass-btn-secondary { background: rgba(51,65,85,0.3); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); color: #f1f5f9; transition: all 0.2s ease; }
-    .glass-btn-secondary:hover:not(:disabled) { background: rgba(51,65,85,0.5); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
-    .glass-category { background: rgba(30,41,59,0.3); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.06); color: #cbd5e1; transition: all 0.2s ease; }
-    .glass-category.active { background: rgba(59,130,246,0.3); border-color: rgba(59,130,246,0.4); color: #f1f5f9; box-shadow: 0 4px 16px rgba(59,130,246,0.15); }
-    .glass-category:hover:not(.active) { background: rgba(30,41,59,0.5); border-color: rgba(255,255,255,0.15); }
-    .cart-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border-radius: 9999px; font-size: 0.6rem; padding: 0.1rem 0.4rem; min-width: 1.2rem; text-align: center; }
-    .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-    .glass-alert { backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.06); }
+    .glass {
+      background: rgba(30,41,59,0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .glass-card {
+      background: rgba(30,41,59,0.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(255,255,255,0.2);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      transform: translateY(-2px);
+    }
+    .glass-header {
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .glass-modal {
+      background: rgba(15,23,42,0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.6);
+    }
+    .glass-input {
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .glass-input:focus {
+      border-color: rgba(59,130,246,0.5);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .glass-btn {
+      background: rgba(59,130,246,0.25);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: #f1f5f9;
+      transition: all 0.2s ease;
+    }
+    .glass-btn:hover:not(:disabled) {
+      background: rgba(59,130,246,0.4);
+      border-color: rgba(59,130,246,0.5);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(59,130,246,0.2);
+    }
+    .glass-btn-secondary {
+      background: rgba(51,65,85,0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #f1f5f9;
+      transition: all 0.2s ease;
+    }
+    .glass-btn-secondary:hover:not(:disabled) {
+      background: rgba(51,65,85,0.5);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+    .glass-category {
+      background: rgba(30,41,59,0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #cbd5e1;
+      transition: all 0.2s ease;
+    }
+    .glass-category.active {
+      background: rgba(59,130,246,0.3);
+      border-color: rgba(59,130,246,0.4);
+      color: #f1f5f9;
+      box-shadow: 0 4px 16px rgba(59,130,246,0.15);
+    }
+    .glass-category:hover:not(.active) {
+      background: rgba(30,41,59,0.5);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444;
+      color: white;
+      border-radius: 9999px;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      min-width: 1.2rem;
+      text-align: center;
+    }
+    .modal-overlay {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+    }
+    .glass-alert {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
-    .spinner { border: 3px solid #1e293b; border-top: 3px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    .spinner {
+      border: 3px solid #1e293b;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
     .modal-animate { animation: fadeIn 0.2s ease-out; }
   </style>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0f172a" />
-  <link rel="apple-touch-icon" href="icon.png" />
 </head>
 <body>
 <div id="root"></div>
@@ -52,7 +162,7 @@
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
 
-  // ---- FIREBASE INIT (identique à SOG) ----
+  // ---- FIREBASE INIT ----
   var firebaseConfig = {
     apiKey: "AIzaSyCegKjHSw2DzF1zcBVdG6iZyGK2P3ig1rM",
     authDomain: "sog-hanout.firebaseapp.com",
@@ -67,7 +177,7 @@
   var auth = firebase.auth();
   var db = firebase.database();
 
-  // Décodage des entités HTML
+  // ---- DÉCODE ENTITÉS HTML ----
   var decodeEntities = function(str) {
     if (!str) return "";
     try {
@@ -79,7 +189,7 @@
     }
   };
 
-  // ---- TEXTES (en entités HTML) ----
+  // ---- TEXTES STATIQUES (tous en entités HTML) ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
@@ -180,7 +290,7 @@
   };
 
   function App() {
-    // ---- CONSTANTES INJECTÉES PAR LE FORKEUR ----
+    // ---- CONSTANTES INJECTÉES ----
     var VENDOR = "{{VENDOR}}";
     var isPlaceholder = VENDOR.startsWith("{{");
 
@@ -197,7 +307,6 @@
     var [isLoading, setIsLoading] = useState(true);
     var [data, setData] = useState(null);
     var [editableData, setEditableData] = useState(null);
-    // États d'authentification Firebase
     var [firebaseUser, setFirebaseUser] = useState(null);
     var [isAdmin, setIsAdmin] = useState(false);
     var [showLoginModal, setShowLoginModal] = useState(false);
@@ -214,8 +323,9 @@
     var [selectedCategoryId, setSelectedCategoryId] = useState(null);
     var [searchQuery, setSearchQuery] = useState("");
     var [order, setOrder] = useState({ name: "", address: "", phone: "", comments: "" });
+    var [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
-    // Schéma (sans icône)
+    // ---- SCHÉMA ----
     var schema = {
       categories: {
         label: TEXTS.categories,
@@ -305,21 +415,16 @@
       widget.open();
     };
 
-    // ---- AUTHENTIFICATION FIREBASE ----
-    // Écouteur d'état de connexion Firebase
+    // ---- AUTH FIREBASE ----
     useEffect(function() {
       var unsubscribe = auth.onAuthStateChanged(function(user) {
         if (user) {
           setFirebaseUser(user);
-          // Vérifier si l'utilisateur est autorisé à gérer cette boutique
-          // On compare l'uid avec l'uid stocké dans /vendors/{vendor}
           db.ref('vendors/' + vendeur).once('value').then(function(snapshot) {
             var vendorData = snapshot.val();
             if (vendorData && vendorData.uid === user.uid) {
               setIsAdmin(true);
             } else {
-              // Optionnel : on peut autoriser l'accès si aucun vendor n'est défini (mode développement)
-              // Mais pour la sécurité, on restreint
               setIsAdmin(false);
             }
           }).catch(function(err) {
@@ -329,40 +434,13 @@
         } else {
           setFirebaseUser(null);
           setIsAdmin(false);
+          setIsAdminAuthenticated(false);
         }
       });
       return function() { unsubscribe(); };
     }, [vendeur]);
 
-    // Gestion de la connexion Firebase
-    var handleFirebaseLogin = async function(e) {
-      e.preventDefault();
-      setMsg({ text: "", type: "" });
-      setIsLoginProcessing(true);
-      try {
-        await auth.signInWithEmailAndPassword(loginEmail, loginPassword);
-        setShowLoginModal(false);
-        setLoginEmail('');
-        setLoginPassword('');
-        setMsg({ text: TEXTS.loginSuccess, type: "success" });
-      } catch (error) {
-        var errorMsg = TEXTS.loginError;
-        if (error.code === 'auth/user-not-found') errorMsg = "Utilisateur non trouv&eacute;";
-        else if (error.code === 'auth/wrong-password') errorMsg = "Mot de passe incorrect";
-        else if (error.code === 'auth/invalid-email') errorMsg = "Email invalide";
-        else if (error.message) errorMsg = "Erreur : " + error.message;
-        setMsg({ text: errorMsg, type: "error" });
-      }
-      setIsLoginProcessing(false);
-    };
-
-    var handleFirebaseLogout = function() {
-      auth.signOut().then(function() {
-        setMsg({ text: "D&eacute;connect&eacute;", type: "info" });
-      });
-    };
-
-    // ---- IFRAME SOG (écoute) ----
+    // ---- IFRAME SOG ----
     useEffect(function() {
       var handleMessage = function(event) {
         if (event.data.type === 'SOG_AUTH') {
@@ -378,7 +456,7 @@
       };
     }, []);
 
-    // ---- CHARGEMENT DES DONNÉES ----
+    // ---- CHARGEMENT DONNÉES ----
     useEffect(function() {
       var stored = localStorage.getItem('fgt_token_' + repoName);
       if (stored) {
@@ -418,7 +496,6 @@
       }
     };
 
-    // Charger les données depuis GitHub
     useEffect(function() {
       var load = async function() {
         if (!vendeur || isPlaceholder) { setIsLoading(false); return; }
@@ -452,7 +529,7 @@
       load();
     }, []);
 
-    // ---- SAUVEGARDE SUR GITHUB ----
+    // ---- SAUVEGARDE ----
     var saveFile = async function(content) {
       var token = getToken();
       if (!token) throw new Error("Token requis.");
@@ -479,7 +556,44 @@
       setData(editableData);
     };
 
-    // ---- CRUD CATÉGORIES ----
+    // ---- GESTION ADMIN ----
+    var handleAdminClick = function() {
+      if (firebaseUser && isAdmin) {
+        setIsAdminAuthenticated(!isAdminAuthenticated);
+      } else {
+        setShowLoginModal(true);
+      }
+    };
+
+    var handleFirebaseLogin = async function(e) {
+      e.preventDefault();
+      setMsg({ text: "", type: "" });
+      setIsLoginProcessing(true);
+      try {
+        await auth.signInWithEmailAndPassword(loginEmail, loginPassword);
+        setShowLoginModal(false);
+        setLoginEmail('');
+        setLoginPassword('');
+        setMsg({ text: TEXTS.loginSuccess, type: "success" });
+      } catch (error) {
+        var errorMsg = TEXTS.loginError;
+        if (error.code === 'auth/user-not-found') errorMsg = "Utilisateur non trouv&eacute;";
+        else if (error.code === 'auth/wrong-password') errorMsg = "Mot de passe incorrect";
+        else if (error.code === 'auth/invalid-email') errorMsg = "Email invalide";
+        else if (error.message) errorMsg = "Erreur : " + error.message;
+        setMsg({ text: errorMsg, type: "error" });
+      }
+      setIsLoginProcessing(false);
+    };
+
+    var handleFirebaseLogout = function() {
+      auth.signOut().then(function() {
+        setIsAdminAuthenticated(false);
+        setMsg({ text: "D&eacute;connect&eacute;", type: "info" });
+      });
+    };
+
+    // ---- CRUD ----
     var openCatModal = function(cat) {
       if (cat === undefined) cat = null;
       setModal({ open: true, type: "category", item: cat, creating: !cat });
@@ -518,7 +632,6 @@
       setMsg({ text: TEXTS.categoryDeleted, type: "info" });
     };
 
-    // ---- CRUD PRODUITS ----
     var openProdModal = function(prod) {
       if (prod === undefined) prod = null;
       setModal({ open: true, type: "product", item: prod, creating: !prod });
@@ -796,20 +909,6 @@
     var currency = settings.currency || "€";
     var cartCount = cart.reduce(function(s, i) { return s + i.quantity; }, 0);
 
-    // Déterminer si l'admin est authentifié Firebase ET autorisé
-    var isAdminAuthenticated = isAdmin && firebaseUser !== null;
-
-    // Gestionnaire de clic sur Admin
-    var handleAdminClick = function() {
-      if (firebaseUser && isAdmin) {
-        // Si déjà connecté en tant qu'admin, on bascule l'affichage
-        setIsAdminAuthenticated(!isAdminAuthenticated);
-      } else {
-        // Sinon, ouvrir le formulaire de connexion
-        setShowLoginModal(true);
-      }
-    };
-
     return (
       <div className="min-h-screen bg-slate-900 text-white p-4">
 
@@ -828,7 +927,7 @@
               ) : null}
               {firebaseUser && isAdmin && (
                 <span className="text-xs bg-blue-900/40 text-blue-200 px-2 py-1 rounded-full">
-                  🔐 Admin (Firebase)
+                  🔐 Admin
                 </span>
               )}
             </div>
@@ -872,7 +971,7 @@
         <div className="max-w-7xl mx-auto mt-6">
 
           {isAdminAuthenticated ? (
-            // ---- PANEL ADMIN (identique à avant, mais protégé par Firebase) ----
+            // ---- PANEL ADMIN ----
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">{decodeEntities(TEXTS.adminPanel)}</h2>
 
@@ -974,7 +1073,7 @@
               </div>
             </div>
           ) : (
-            // ---- PARTIE PUBLIQUE (catalogue) ----
+            // ---- CATALOGUE PUBLIC ----
             <div>
               <div className="mb-4">
                 <input type="text" value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} placeholder={decodeEntities(TEXTS.search)} className="glass-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 outline-none" />
