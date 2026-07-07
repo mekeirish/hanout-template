@@ -185,7 +185,7 @@
     }
   };
 
-  // ---- TEXTES STATIQUES (en entités HTML) ----
+  // ---- TEXTES STATIQUES ----
   var TEXTS = {
     admin: "Admin",
     cart: "Panier",
@@ -286,7 +286,6 @@
   };
 
   function App() {
-    // ---- CONSTANTES ----
     var VENDOR = "{{VENDOR}}";
     var isPlaceholder = VENDOR.startsWith("{{");
 
@@ -411,7 +410,7 @@
       widget.open();
     };
 
-    // ---- AUTH FIREBASE ----
+    // ---- AUTH FIREBASE (local) ----
     useEffect(function() {
       var unsubscribe = auth.onAuthStateChanged(function(user) {
         if (user) {
@@ -436,7 +435,7 @@
       return function() { unsubscribe(); };
     }, [vendeur]);
 
-    // ---- IFRAME SOG ----
+    // ---- IFRAME SOG (réception de l'auth) ----
     useEffect(function() {
       var handleMessage = function(event) {
         if (event.data.type === 'SOG_AUTH') {
@@ -446,8 +445,11 @@
         }
       };
       window.addEventListener('message', handleMessage);
+      
+      // Demander l'authentification à SOG (si déjà connecté)
       window.parent.postMessage({ type: 'SOG_READY' }, '*');
       setIsReady(true);
+      
       return function() {
         window.removeEventListener('message', handleMessage);
       };
@@ -763,7 +765,7 @@
       }, '*');
     };
 
-    // ---- CHECKOUT (avec enregistrement direct dans Firebase + customerEmail) ----
+    // ---- CHECKOUT (avec enregistrement direct dans Firebase) ----
     var checkout = async function() {
       if (cart.length === 0) { alert(decodeEntities(TEXTS.cartEmpty)); return; }
       if (!sogUser) {
@@ -797,7 +799,7 @@
         await db.ref('orders').push(orderData);
         console.log('✅ Commande enregistrée dans Firebase');
 
-        // ---- ENVOI À SOG POUR REAFFICHAGE DE L'HISTORIQUE CLIENT ----
+        // ---- ENVOI À SOG POUR REAFFICHAGE ----
         window.parent.postMessage({
           type: 'SOG_ORDER_SAVED',
           payload: { userId: sogUser.uid, email: sogUser.email }
@@ -810,7 +812,7 @@
         return;
       }
 
-      // ---- ENVOI À SOG (pour synchronisation) ----
+      // ---- ENVOI À SOG ----
       sendOrderToSOG(order);
 
       // ---- NOTIFICATION NTFY ----
